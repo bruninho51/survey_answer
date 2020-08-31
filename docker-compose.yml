@@ -37,16 +37,16 @@ services:
     networks:
       - net
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    image: node:12.3
     volumes:
       - ./app:/app
     ports:
       - 8080:8080 # Servidor
       - 8181:8181 # Debug
-    entrypoint: npm run dev
+    working_dir: /app
+    entrypoint: bash ./app.sh
     environment:
+      - NODE_ENV=development
       - MONGO_CONNECTION_STRING=mongodb://mongo:mongo@mongo:27017
       - MONGO_DB_NAME=survey-answer
     networks:

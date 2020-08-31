@@ -1,3 +1,5 @@
 package-lock.json
 /dist/*
 .env
+app/node_modules
+/storage
