@@ -1,4 +1,5 @@
 import { IsEmail, IsDate, Length, IsNotEmpty, validate as modelValidate } from "class-validator";
+import { UserDTO } from "../dto/UserDTO";
 
 export interface IUserModel {
     getId() : string;
@@ -20,6 +21,7 @@ export interface IUserModel {
     getPassword() : string;
     setPassword(password : string) : IUserModel;
     validate() : Promise<any>;
+    populate(userDTO : UserDTO) : IUserModel;
 }
 
 export default class UserModel implements IUserModel {
@@ -130,5 +132,18 @@ export default class UserModel implements IUserModel {
 
     validate(): Promise<any> {
         return modelValidate(this);
+    }
+
+    populate(userDTO : UserDTO) : IUserModel {
+        this.setId(userDTO.id);
+        this.setName(userDTO.name);
+        this.setLastName(userDTO.lastName);
+        this.setDateOfBirth(userDTO.dateOfBirth);
+        this.setEmail(userDTO.email);
+        this.setPictureUrl(userDTO.pictureUrl);
+        this.setUsername(userDTO.username);
+        this.setPassword(userDTO.password);
+
+        return this;
     }
 }

@@ -3,16 +3,16 @@ import Db from "../service/db/Db";
 import { IUserModel } from "../model/UserModel";
 import { IUserFactory } from "../service/factory/UserModelFactory";
 import { ObjectID } from "mongodb";
-import { Get, Param } from "routing-controllers";
 import { PagingOptions } from "../contracts/PageOptions";
+import { application } from "express";
 
 
 export interface IUserRepository {
-    cadUser(user : IUserModel) : Promise<IUserModel>;
-    getUser(id: string) : Promise<IUserModel>;
-    countAllUsers() : Promise<number>;
-    getAllUsers(options : PagingOptions) : Promise<Array<IUserModel>>;
-    updateUser(user : IUserModel) : Promise<IUserModel>;
+    save(user : IUserModel) : Promise<IUserModel>;
+    getById(id: string) : Promise<IUserModel>;
+    countAll() : Promise<number>;
+    getAll(options : PagingOptions) : Promise<Array<IUserModel>>;
+    update(user : IUserModel) : Promise<IUserModel>;
 }
 
 @Service('user.repository')
@@ -21,12 +21,27 @@ export default class UserRepository implements IUserRepository {
     @Inject('user.factory')
     private userFactory : IUserFactory;
 
-    async cadUser(user : IUserModel) : Promise<IUserModel> {
-        return this.userFactory.create();
+    async save(user : IUserModel) : Promise<IUserModel> {
+        await Db.connect();
+        let db = Db.getDb();
+        let collection = db.collection('Users');
+
+        let result = await collection.insertOne({
+            name: user.getName(),
+            lastName: user.getLastName(),
+            dateOfBirth: user.getDateOfBirth(),
+            email: user.getEmail(),
+            pictureUrl: user.getPictureUrl(),
+            username: user.getUsername(),
+            password: user.getPassword()
+        });
+        
+        user.setId(result.ops[0]._id.toString());
+
+        return user;
     }
 
-    @Get('/:id')
-    async getUser(@Param('id') id: string) : Promise<IUserModel> {
+    async getById(id: string) : Promise<IUserModel> {
         
         await Db.connect();
         let db = Db.getDb();
@@ -55,7 +70,7 @@ export default class UserRepository implements IUserRepository {
         }
     }
 
-    async countAllUsers() : Promise<number> {
+    async countAll() : Promise<number> {
         await Db.connect();
         let db = Db.getDb();
         let collection = db.collection('Users');
@@ -63,7 +78,7 @@ export default class UserRepository implements IUserRepository {
         return collection.countDocuments();
     }
 
-    async getAllUsers({ limit = 10, page = 1 } : PagingOptions) : Promise<Array<IUserModel>> {
+    async getAll({ limit = 10, page = 1 } : PagingOptions) : Promise<Array<IUserModel>> {
        
         let skip : number = (page - 1) * limit;
 
@@ -96,12 +111,11 @@ export default class UserRepository implements IUserRepository {
     
             return usersList;
         } catch (err) {
-            console.error(err);
             return usersList;
         }
     }
 
-    async updateUser(user : IUserModel): Promise<IUserModel> {
+    async update(user : IUserModel): Promise<IUserModel> {
         return this.userFactory.create();
     }
 }
