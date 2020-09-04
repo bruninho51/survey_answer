@@ -37,7 +37,7 @@ export class UserController {
         let userModel : IUserModel = this.userFactory.create().populate(userDTO);
         try {
             let newUser : IUserModel = await this.userRepository.save(userModel);
-            return newUser;
+            return new UserResource(newUser);
         } catch (error) {
             throw new InternalServerError("An error ocurred on save user.");
         }
