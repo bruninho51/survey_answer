@@ -4,8 +4,6 @@ import { IUserModel } from "../model/UserModel";
 import { IUserFactory } from "../service/factory/UserModelFactory";
 import { ObjectID } from "mongodb";
 import { PagingOptions } from "../contracts/PageOptions";
-import { application } from "express";
-
 
 export interface IUserRepository {
     save(user : IUserModel) : Promise<IUserModel>;
@@ -13,6 +11,8 @@ export interface IUserRepository {
     countAll() : Promise<number>;
     getAll(options : PagingOptions) : Promise<Array<IUserModel>>;
     update(user : IUserModel) : Promise<IUserModel>;
+    emailExists(email : string) : Promise<boolean>;
+    usernameExists(username : string) : Promise<boolean>;
 }
 
 @Service('user.repository')
@@ -35,7 +35,7 @@ export default class UserRepository implements IUserRepository {
             username: user.getUsername(),
             password: user.getPassword()
         });
-        
+
         user.setId(result.ops[0]._id.toString());
 
         return user;
@@ -117,5 +117,27 @@ export default class UserRepository implements IUserRepository {
 
     async update(user : IUserModel): Promise<IUserModel> {
         return this.userFactory.create();
+    }
+
+    async emailExists(email : string) : Promise<boolean> {
+        await Db.connect();
+        let db = Db.getDb();
+        let collection = db.collection('Users');
+        let res = await collection.findOne({ email });
+        if (res) {
+            return true;
+        }
+        return false;
+    }
+
+    async usernameExists(username : string) : Promise<boolean> {
+        await Db.connect();
+        let db = Db.getDb();
+        let collection = db.collection('Users');
+        let res = await collection.findOne({ username });
+        if (res) {
+            return true;
+        }
+        return false;
     }
 }

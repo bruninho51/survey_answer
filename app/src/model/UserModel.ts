@@ -1,5 +1,7 @@
 import { IsEmail, IsDate, Length, IsNotEmpty, validate as modelValidate } from "class-validator";
 import { UserDTO } from "../dto/UserDTO";
+import { IsUniqueUserEmail } from "../validation/IsUniqueUserEmail";
+import { IsUniqueUsername } from "../validation/IsUniqueUsername";
 
 export interface IUserModel {
     getId() : string;
@@ -37,6 +39,7 @@ export default class UserModel implements IUserModel {
     private dateOfBirth: Date;
 
     @IsEmail()
+    @IsUniqueUserEmail()
     private email: string;
 
     private picture: Blob;
@@ -44,6 +47,7 @@ export default class UserModel implements IUserModel {
     private pictureUrl: string;
 
     @IsNotEmpty()
+    @IsUniqueUsername()
     private username: string;
 
     @Length(8)

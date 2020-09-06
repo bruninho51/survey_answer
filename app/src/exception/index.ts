@@ -1,5 +1,5 @@
-import UserNotFoundException from './UserNotFoundException';
+import HttpUserNotFoundException from './http/HttpUserNotFoundException';
 
 export {
-    UserNotFoundException
+    HttpUserNotFoundException
 }
