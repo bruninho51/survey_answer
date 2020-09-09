@@ -1,4 +1,4 @@
-import { Get, Param, JsonController, OnUndefined, QueryParam, Post, Body, InternalServerError } from "routing-controllers";
+import { Get, Param, JsonController, OnUndefined, QueryParam, Post, Body, InternalServerError, Authorized } from "routing-controllers";
 import { Inject } from "typedi";
 import { IUserRepository } from "../repository/UserRepository";
 import { IUserModel } from "../model/UserModel";
@@ -18,6 +18,7 @@ export class UserController {
     private userFactory : UserFactory;
 
     @Get('/')
+    @Authorized()
     async getAllUsers(@QueryParam('page') page : number = 1, @QueryParam('limit') limit : number = 10) {
         let usersList : Array<IUserModel> = await this.userRepository.getAll({ page, limit });
         let count : number = await this.userRepository.countAll();
@@ -26,6 +27,7 @@ export class UserController {
     }
 
     @Get('/:id')
+    @Authorized()
     @OnUndefined(HttpUserNotFoundException)
     async getUser(@Param('id') id : string) {
         let user : IUserModel = await this.userRepository.getById(id);
@@ -33,8 +35,8 @@ export class UserController {
     }
 
     @Post('/')
+    @Authorized()
     async cadUser(@Body() userDTO : UserDTO) {
-        // Criar decorator para validar se e-mail do usuário já existe
         let userModel : IUserModel = this.userFactory.create().populate(userDTO);
         try {
             let newUser : IUserModel = await this.userRepository.save(userModel);
