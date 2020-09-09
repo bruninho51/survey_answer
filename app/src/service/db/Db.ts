@@ -11,7 +11,7 @@ export default class Db {
         try {
             if (!this.client) {
                 console.info(`connect: Conectando em ${this.connectionString}.`);
-                this.client = await MongoClient.connect(this.connectionString, { useNewUrlParser: true });
+                this.client = await MongoClient.connect(this.connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
                 console.info(`connect: Conectado em ${this.connectionString}.`);
             }
         } catch (err) {

@@ -13,6 +13,7 @@ export interface IUserRepository {
     update(user : IUserModel) : Promise<IUserModel>;
     emailExists(email : string) : Promise<boolean>;
     usernameExists(username : string) : Promise<boolean>;
+    getByUsernameAndPassword(username : string, password : string) : Promise<IUserModel>;
 }
 
 @Service('user.repository')
@@ -53,13 +54,13 @@ export default class UserRepository implements IUserRepository {
             let result = await collection.findOne({ _id: new ObjectID(id) });
 
             if (result) {
-                userModel = this.userFactory.create();
-                userModel.setId(result._id.toString())
+                userModel = this.userFactory.create()
+                    .setId(result._id.toString())
                     .setName(result.name)
                     .setLastName(result.lastName)
                     .setDateOfBirth(result.dateOfBirth)
                     .setEmail(result.email)
-                    .setPictureUrl(result.picture)
+                    .setPictureUrl(result.pictureUrl)
                     .setUsername(result.username)
                     .setPassword(result.password);
             }
@@ -90,22 +91,20 @@ export default class UserRepository implements IUserRepository {
 
         try {
             let result = await collection.find({}, { limit, skip });
-
             if (result) {
-
                 let arrResult = await result.toArray();
                 for (let i = 0; i < arrResult.length; i++) {
                     let result = arrResult[i];
-                    let userModel : IUserModel = this.userFactory.create();
-                    usersList.push(
-                        userModel.setId(result._id.toString())
-                            .setName(result.name)
-                            .setLastName(result.lastName)
-                            .setDateOfBirth(result.dateOfBirth)
-                            .setEmail(result.email)
-                            .setPictureUrl(result.picture)
-                            .setUsername(result.username)
-                            .setPassword(result.password));
+                    const user : IUserModel = this.userFactory.create()
+                        .setId(result._id.toString())
+                        .setName(result.name)
+                        .setLastName(result.lastName)
+                        .setDateOfBirth(result.dateOfBirth)
+                        .setEmail(result.email)
+                        .setPictureUrl(result.pictureUrl)
+                        .setUsername(result.username)
+                        .setPassword(result.password)
+                    usersList.push(user);
                 }
             }
     
@@ -139,5 +138,24 @@ export default class UserRepository implements IUserRepository {
             return true;
         }
         return false;
+    }
+
+    async getByUsernameAndPassword(username : string, password : string) : Promise<IUserModel> {
+        await Db.connect();
+        let db = Db.getDb();
+        let collection = db.collection('Users');
+        let result = await collection.findOne({ username, password });
+        if (result) {
+            return this.userFactory.create()
+                .setId(result._id.toString())
+                .setLastName(result.lastName)
+                .setDateOfBirth(result.dateOfBirth)
+                .setEmail(result.email)
+                .setPictureUrl(result.pictureUrl)
+                .setUsername(result.username)
+                .setPassword(result.password);
+        }
+
+        return null;
     }
 }

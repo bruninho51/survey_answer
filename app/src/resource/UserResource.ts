@@ -7,6 +7,7 @@ export class UserResource {
 
     constructor(user : IUserModel) {
 
+        user.setPassword(null);
         this.user = user;
         this.createLinks();
     }

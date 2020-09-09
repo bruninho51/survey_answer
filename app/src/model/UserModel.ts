@@ -2,6 +2,7 @@ import { IsEmail, IsDate, Length, IsNotEmpty, validate as modelValidate } from "
 import { UserDTO } from "../dto/UserDTO";
 import { IsUniqueUserEmail } from "../validation/IsUniqueUserEmail";
 import { IsUniqueUsername } from "../validation/IsUniqueUsername";
+import crypto from "crypto";
 
 export interface IUserModel {
     getId() : string;
@@ -130,7 +131,15 @@ export default class UserModel implements IUserModel {
     }
 
     setPassword(password: string): IUserModel {
-        this.password = password;
+        
+        this.password = null;
+        if (password) {
+            const passwordHash = crypto.createHash('sha256')
+            .update(process.env.SECRET + password)
+            .digest('hex');
+            this.password = passwordHash;
+        }
+
         return this;
     }
 
