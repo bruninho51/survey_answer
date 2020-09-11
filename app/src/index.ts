@@ -1,9 +1,10 @@
 import * as dotenv from "dotenv";
 import "reflect-metadata";
-import { createExpressServer, useContainer, Action } from "routing-controllers";
+import { createExpressServer, useContainer, Action, InternalServerError } from "routing-controllers";
 import { Container } from "typedi";
 import Db from "./service/db/Db";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
+import HttpTokenExpiredExeception from "./exception/http/HttpTokenExpiredException";
 
 dotenv.config({ path: '/app/.env' });
 
@@ -18,8 +19,16 @@ const app = createExpressServer({
     if (rawToken && rawToken.startsWith('Bearer ')) {
 
       const token = rawToken.slice(7, rawToken.length);
-      if (jwt.verify(token, process.env.SECRET)) {
-        return true;
+      try {
+        if (jwt.verify(token, process.env.SECRET)) {
+          return true;
+        }
+      } catch (e) {
+        if (e instanceof TokenExpiredError) {
+          throw new HttpTokenExpiredExeception();
+        } else {
+          throw new InternalServerError("An error occurred while trying to read the token: " + e);
+        }
       }
     }
 
