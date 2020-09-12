@@ -25,7 +25,7 @@ export class AuthController {
         const user : IUserModel = await this.repository.getByUsernameAndPassword(username, passwordHash);
 
         if (user) {
-            let token = jwt.sign({ user }, process.env.SECRET, {
+            let token = jwt.sign({ id: user.getId() }, process.env.SECRET, {
                 expiresIn: process.env.TOKEN_TIME
             });
 

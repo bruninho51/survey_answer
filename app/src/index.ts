@@ -5,6 +5,8 @@ import { Container } from "typedi";
 import Db from "./service/db/Db";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
 import HttpTokenExpiredExeception from "./exception/http/HttpTokenExpiredException";
+import { IUserRepository } from "./repository/UserRepository";
+import { IUserModel } from "./model/UserModel";
 
 dotenv.config({ path: '/app/.env' });
 
@@ -20,7 +22,10 @@ const app = createExpressServer({
 
       const token = rawToken.slice(7, rawToken.length);
       try {
-        if (jwt.verify(token, process.env.SECRET)) {
+        const decoded: any = jwt.verify(token, process.env.SECRET)
+        if (decoded) {
+          const repository : IUserRepository = Container.get('user.repository');
+          action.request.me = repository.getById(decoded.id);
           return true;
         }
       } catch (e) {
@@ -33,7 +38,8 @@ const app = createExpressServer({
     }
 
     return false;
-  }
+  },
+  currentUserChecker: (action: Action) : IUserModel => action.request.me
 });
 
 app.listen(8080);
