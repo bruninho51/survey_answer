@@ -1,12 +1,9 @@
 import { Type } from "class-transformer";
 import { IsDate, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { AskDTO } from "./AskDTO";
-import { UserDTO } from "./UserDTO";
+import { UserIdDTO } from "./UserIdDTO";
 
-export class SurveyDTO {
-
-    @IsString()
-    public id : string;
+export class RegisterSurveyDTO {
 
     @IsNotEmpty()
     @IsString()
@@ -21,9 +18,9 @@ export class SurveyDTO {
     public expiration : Date;
 
     @IsNotEmpty()
-    @Type(() => UserDTO)
+    @Type(() => UserIdDTO)
     @ValidateNested({ each: true })
-    public owner : UserDTO;
+    public owner : UserIdDTO;
 
     @IsNotEmpty()
     @Type(() => AskDTO)

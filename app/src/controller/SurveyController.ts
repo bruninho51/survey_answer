@@ -1,15 +1,18 @@
-import { BodyParam, JsonController, Post } from "routing-controllers";
+import { Authorized, Body, Get, InternalServerError, JsonController, OnUndefined, Param, Post, QueryParam } from "routing-controllers";
 import { ISurveyFactory } from "../service/factory/SurveyFactory";
 import { Inject } from "typedi";
-import { SurveyDTO } from "../dto/SurveyDTO";
+import { RegisterSurveyDTO } from "../dto/RegisterSurveyDTO";
 import { ISurveyModel } from "../model/SurveyModel";
-import { IUserFactory } from "../service/factory/UserModelFactory";
 import { AskDTO } from "../dto/AskDTO";
 
 import { IAskFactory } from "../service/factory/AskModelFactory";
 import { SurveyResource } from "../resource/SurveyResource";
-import { InvalidAskTypeException } from "../exception";
+import { HttpSurveyNotFoundException, InvalidAskTypeException } from "../exception";
 import { HttpInvalidAskTypeException } from "../exception";
+import { IUserRepository } from "../repository/UserRepository";
+import { ISurveyRepository } from "../repository/SurveyRepository";
+import HttpSurveyNotFoundError from "../exception/http/HttpSurveyNotFoundException";
+import { SurveysResource } from "../resource/SurveysResource";
 
 @JsonController("/survey")
 export class SurveyController {
@@ -17,30 +20,54 @@ export class SurveyController {
     @Inject('survey.factory')
     private surveyFactory : ISurveyFactory;
 
-    @Inject('user.factory')
-    private userFactory : IUserFactory;
+    @Inject('survey.repository')
+    private surveyRepository : ISurveyRepository;
+
+    @Inject('user.repository')
+    private userRepository : IUserRepository;
 
     @Inject('ask.factory')
     private askFactory : IAskFactory;
 
     @Post()
-    async cadSurvey(@BodyParam("survey") surveyDTO: SurveyDTO) {
+    async cadSurvey(@Body() surveyDTO: RegisterSurveyDTO) {
         
         let surveyModel : ISurveyModel = this.surveyFactory.create().populate(surveyDTO);
-        surveyModel.setOwner(this.userFactory.create().populate(surveyDTO.owner));
+        
+        surveyModel.setOwner(await this.userRepository.getById(surveyDTO.owner.id));
 
         try {
             surveyModel.setAsks(surveyDTO.asks.map((askDTO : AskDTO) => {
                 return this.askFactory.create(askDTO.type).populate(askDTO);
             }));
+            
+            return new SurveyResource(
+                await this.surveyRepository.save(surveyModel));
+
         } catch (e) {
             if (e instanceof InvalidAskTypeException) {
                 throw new HttpInvalidAskTypeException();
             } else {
-                throw e;
+                throw new InternalServerError("An error ocurred on save survey.");
             }
         }
+    }
 
-        return new SurveyResource(surveyModel);
+    @Get('/:id')
+    @Authorized()
+    @OnUndefined(HttpSurveyNotFoundError)
+    async getSurvey(@Param('id') id : string) {
+        let survey : ISurveyModel = await this.surveyRepository.getById(id);
+        if (survey) return new SurveyResource(survey);
+    }
+
+    @Get('/')
+    @Authorized()
+    @OnUndefined(HttpSurveyNotFoundException)
+    async getAllSurveys(@QueryParam('page') page : number = 1, @QueryParam('limit') limit : number = 10) {
+        let surveysList : Array<ISurveyModel> = await this.surveyRepository.getAll({ page, limit });
+        let count : number = await this.surveyRepository.countAll();
+
+        return new SurveysResource(surveysList, { limit, page }, count);
     }
 }

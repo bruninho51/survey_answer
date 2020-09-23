@@ -5,7 +5,7 @@ import { IUserModel } from "../model/UserModel";
 import { UserResource } from "../resource/UserResource";
 import { UsersResource } from "../resource/UsersResource";
 import { UserFactory } from "../service/factory/UserModelFactory";
-import { UserDTO } from "../dto/UserDTO";
+import { RegisterUserDTO } from "../dto/RegisterUserDTO";
 import { HttpUserNotFoundException } from "../exception";
 
 @JsonController("/user")
@@ -17,13 +17,15 @@ export class UserController {
     @Inject('user.factory')
     private userFactory : UserFactory;
 
-    @Get('/')
+    @Post('/')
     @Authorized()
-    async getAllUsers(@QueryParam('page') page : number = 1, @QueryParam('limit') limit : number = 10) {
-        let usersList : Array<IUserModel> = await this.userRepository.getAll({ page, limit });
-        let count : number = await this.userRepository.countAll();
-
-        return new UsersResource(usersList, { limit, page }, count);
+    async cadUser(@Body() userDTO : RegisterUserDTO) {
+        let userModel : IUserModel = this.userFactory.create().populate(userDTO);
+        try {
+            return new UserResource(await this.userRepository.save(userModel));
+        } catch (error) {
+            throw new InternalServerError("An error ocurred on save user.");
+        }
     }
 
     @Get('/:id')
@@ -31,20 +33,16 @@ export class UserController {
     @OnUndefined(HttpUserNotFoundException)
     async getUser(@Param('id') id : string) {
         let user : IUserModel = await this.userRepository.getById(id);
-        return new UserResource(user);
+        if (user) return new UserResource(user);
     }
 
-    @Post('/')
+    @Get('/')
     @Authorized()
-    async cadUser(@Body() userDTO : UserDTO) {
-        let userModel : IUserModel = this.userFactory.create().populate(userDTO);
-        try {
-            let newUser : IUserModel = await this.userRepository.save(userModel);
-            return new UserResource(newUser);
-        } catch (error) {
-            console.log(error);
-            throw new InternalServerError("An error ocurred on save user.");
-        }
+    async getAllUsers(@QueryParam('page') page : number = 1, @QueryParam('limit') limit : number = 10) {
+        let usersList : Array<IUserModel> = await this.userRepository.getAll({ page, limit });
+        let count : number = await this.userRepository.countAll();
+
+        return new UsersResource(usersList, { limit, page }, count);
     }
 
 }

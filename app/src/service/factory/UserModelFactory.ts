@@ -1,9 +1,12 @@
 import { Service } from "typedi";
 import { IUserModel } from "../../model/UserModel";
 import UserModel from "../../model/UserModel";
+import { ObjectID } from "mongodb";
 
 export interface IUserFactory {
     create() : IUserModel;
+    createMongoMap(userModel : IUserModel) : Object;
+    createByMongoMap(mongoMap : any) : IUserModel;
 }
 
 @Service('user.factory')
@@ -11,5 +14,30 @@ export class UserFactory implements IUserFactory {
 
     create() : IUserModel {
         return new UserModel();
+    }
+
+    createByMongoMap(mongoMap : any) : IUserModel {
+        return this.create()
+            .setId(mongoMap._id.toString())
+            .setName(mongoMap.name)
+            .setLastName(mongoMap.lastName)
+            .setDateOfBirth(mongoMap.dateOfBirth)
+            .setEmail(mongoMap.email)
+            .setPictureUrl(mongoMap.pictureUrl)
+            .setUsername(mongoMap.username)
+            .setPassword(mongoMap.password);
+    }
+
+    createMongoMap(userModel : IUserModel) : Object {
+        return {
+            _id: userModel.getId() ?? new ObjectID(),
+            name: userModel.getName(),
+            lastName: userModel.getLastName(),
+            dateOfBirth: userModel.getDateOfBirth(),
+            email: userModel.getEmail(),
+            pictureUrl: userModel.getPictureUrl(),
+            username: userModel.getUsername(),
+            password: userModel.getPassword()
+        };
     }
 }

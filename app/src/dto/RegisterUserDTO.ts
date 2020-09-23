@@ -3,9 +3,7 @@ import { Type } from "class-transformer";
 import { IsUniqueUserEmail } from "../validation/IsUniqueUserEmail";
 import { IsUniqueUsername } from "../validation/IsUniqueUsername";
 
-export class UserDTO {
-
-    public id : string;
+export class RegisterUserDTO {
 
     @IsNotEmpty()
     public name: string;

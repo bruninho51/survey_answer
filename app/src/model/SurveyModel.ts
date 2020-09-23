@@ -1,4 +1,3 @@
-import { Type } from "class-transformer";
 import { IsDate, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { validate as modelValidate } from "class-validator";
 import { SurveyDTO } from "../dto/SurveyDTO";
@@ -13,7 +12,7 @@ export interface ISurveyModel {
     getDescription() : string;
     setDescription(description : string) : ISurveyModel;
     getExpiration() : Date;
-    setxpiration(expiration : Date) : ISurveyModel;
+    setExpiration(expiration : Date) : ISurveyModel;
     getOwner() : IUserModel;
     setOwner(owner : IUserModel) : ISurveyModel;
     getAsks() : Array<IAskModel>;
@@ -81,7 +80,7 @@ export default class SurveyModel implements ISurveyModel {
         return this.expiration;
     }
 
-    setxpiration(expiration: Date): ISurveyModel {
+    setExpiration(expiration: Date): ISurveyModel {
         this.expiration = expiration;
         return this;
     }
@@ -117,7 +116,7 @@ export default class SurveyModel implements ISurveyModel {
         this.setId(surveyDTO.id);
         this.setName(surveyDTO.name);
         this.setDescription(surveyDTO.description);
-        this.setxpiration(surveyDTO.expiration);
+        this.setExpiration(surveyDTO.expiration);
 
         return this;
     }

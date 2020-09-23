@@ -19,11 +19,6 @@ export class SurveyResource {
                 type: "GET",
                 rel: "self",
                 uri: process.env.BASE_URL + "/survey/" + this.survey.getId()
-            },
-            {
-                type: "PUT",
-                rel: "self",
-                uri: process.env.BASE_URL + "/survey/" + this.survey.getId()
             }
         );
     }

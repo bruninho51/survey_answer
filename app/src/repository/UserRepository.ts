@@ -26,16 +26,9 @@ export default class UserRepository implements IUserRepository {
         await Db.connect();
         let db = Db.getDb();
         let collection = db.collection('Users');
-
-        let result = await collection.insertOne({
-            name: user.getName(),
-            lastName: user.getLastName(),
-            dateOfBirth: user.getDateOfBirth(),
-            email: user.getEmail(),
-            pictureUrl: user.getPictureUrl(),
-            username: user.getUsername(),
-            password: user.getPassword()
-        });
+        
+        let result = await collection.insertOne(
+            this.userFactory.createMongoMap(user));
 
         user.setId(result.ops[0]._id.toString());
 
@@ -48,27 +41,19 @@ export default class UserRepository implements IUserRepository {
         let db = Db.getDb();
         let collection = db.collection('Users');
 
-        let userModel : IUserModel;
-
         try {
-            let result = await collection.findOne({ _id: new ObjectID(id) });
 
+            let result = await collection.findOne({ _id: new ObjectID(id) });
             if (result) {
-                userModel = this.userFactory.create()
-                    .setId(result._id.toString())
-                    .setName(result.name)
-                    .setLastName(result.lastName)
-                    .setDateOfBirth(result.dateOfBirth)
-                    .setEmail(result.email)
-                    .setPictureUrl(result.pictureUrl)
-                    .setUsername(result.username)
-                    .setPassword(result.password);
+                return this.userFactory.createByMongoMap(result);
             }
-    
-            return userModel;
+
+            return null;
+
         } catch (err) {
-            return userModel;
+            return null;
         }
+
     }
 
     async countAll() : Promise<number> {
@@ -93,19 +78,10 @@ export default class UserRepository implements IUserRepository {
             let result = await collection.find({}, { limit, skip });
             if (result) {
                 let arrResult = await result.toArray();
-                for (let i = 0; i < arrResult.length; i++) {
-                    let result = arrResult[i];
-                    const user : IUserModel = this.userFactory.create()
-                        .setId(result._id.toString())
-                        .setName(result.name)
-                        .setLastName(result.lastName)
-                        .setDateOfBirth(result.dateOfBirth)
-                        .setEmail(result.email)
-                        .setPictureUrl(result.pictureUrl)
-                        .setUsername(result.username)
-                        .setPassword(result.password)
-                    usersList.push(user);
-                }
+                arrResult.forEach(mongoMap => {
+                    usersList.push(
+                        this.userFactory.createByMongoMap(mongoMap));
+                });
             }
     
             return usersList;
@@ -115,7 +91,7 @@ export default class UserRepository implements IUserRepository {
     }
 
     async update(user : IUserModel): Promise<IUserModel> {
-        return this.userFactory.create();
+        throw new Error('not implemented yet');
     }
 
     async emailExists(email : string) : Promise<boolean> {
@@ -123,10 +99,8 @@ export default class UserRepository implements IUserRepository {
         let db = Db.getDb();
         let collection = db.collection('Users');
         let res = await collection.findOne({ email });
-        if (res) {
-            return true;
-        }
-        return false;
+
+        return !!res;
     }
 
     async usernameExists(username : string) : Promise<boolean> {
@@ -134,10 +108,8 @@ export default class UserRepository implements IUserRepository {
         let db = Db.getDb();
         let collection = db.collection('Users');
         let res = await collection.findOne({ username });
-        if (res) {
-            return true;
-        }
-        return false;
+        
+        return !!res;
     }
 
     async getByUsernameAndPassword(username : string, password : string) : Promise<IUserModel> {
@@ -146,14 +118,7 @@ export default class UserRepository implements IUserRepository {
         let collection = db.collection('Users');
         let result = await collection.findOne({ username, password });
         if (result) {
-            return this.userFactory.create()
-                .setId(result._id.toString())
-                .setLastName(result.lastName)
-                .setDateOfBirth(result.dateOfBirth)
-                .setEmail(result.email)
-                .setPictureUrl(result.pictureUrl)
-                .setUsername(result.username)
-                .setPassword(result.password);
+            return this.userFactory.createByMongoMap(result);
         }
 
         return null;

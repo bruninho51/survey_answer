@@ -1,9 +1,6 @@
 import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Min } from "class-validator";
 
 export class AskDTO {
-    
-    @IsString()
-    public id : string;
 
     @IsString()
     @IsNotEmpty()
