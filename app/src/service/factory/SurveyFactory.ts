@@ -1,6 +1,6 @@
 import { ObjectID } from "mongodb";
 import { IAskModel } from "../../model/AskModel";
-import AskSelectModel, { IAskSelectModel } from "../../model/AskSelectModel";
+import AskSelectModel from "../../model/AskSelectModel";
 import { Inject, Service } from "typedi";
 import SurveyModel, { ISurveyModel } from "../../model/SurveyModel";
 import { IUserFactory } from "./UserModelFactory";
