@@ -1,5 +1,5 @@
 import { IsEmail, IsDate, Length, IsNotEmpty, validate as modelValidate, IsString, IsOptional } from "class-validator";
-import { UserDTO } from "../dto/UserDTO";
+//import { UserDTO } from "../dto/UserDTO";
 import { IsUniqueUserEmail } from "../validation/IsUniqueUserEmail";
 import { IsUniqueUsername } from "../validation/IsUniqueUsername";
 import crypto from "crypto";
@@ -24,7 +24,7 @@ export interface IUserModel {
     getPassword() : string;
     setPassword(password : string) : IUserModel;
     validate() : Promise<any>;
-    populate(userDTO : UserDTO) : IUserModel;
+    populate(userMap : any) : IUserModel;
 }
 
 export default class UserModel implements IUserModel {
@@ -152,15 +152,15 @@ export default class UserModel implements IUserModel {
         return modelValidate(this);
     }
 
-    populate(userDTO : UserDTO) : IUserModel {
-        this.setId(userDTO.id);
-        this.setName(userDTO.name);
-        this.setLastName(userDTO.lastName);
-        this.setDateOfBirth(userDTO.dateOfBirth);
-        this.setEmail(userDTO.email);
-        this.setPictureUrl(userDTO.pictureUrl);
-        this.setUsername(userDTO.username);
-        this.setPassword(userDTO.password);
+    populate(userMap : any) : IUserModel {
+        this.setId(userMap.id);
+        this.setName(userMap.name);
+        this.setLastName(userMap.lastName);
+        this.setDateOfBirth(userMap.dateOfBirth);
+        this.setEmail(userMap.email);
+        this.setPictureUrl(userMap.pictureUrl);
+        this.setUsername(userMap.username);
+        this.setPassword(userMap.password);
 
         return this;
     }

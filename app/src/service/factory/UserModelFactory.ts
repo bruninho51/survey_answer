@@ -17,15 +17,8 @@ export class UserFactory implements IUserFactory {
     }
 
     createByMongoMap(mongoMap : any) : IUserModel {
-        return this.create()
-            .setId(mongoMap._id.toString())
-            .setName(mongoMap.name)
-            .setLastName(mongoMap.lastName)
-            .setDateOfBirth(mongoMap.dateOfBirth)
-            .setEmail(mongoMap.email)
-            .setPictureUrl(mongoMap.pictureUrl)
-            .setUsername(mongoMap.username)
-            .setPassword(mongoMap.password);
+        let userModel : IUserModel = this.create().populate({ ...mongoMap, id: mongoMap._id.toString() });
+        return userModel;
     }
 
     createMongoMap(userModel : IUserModel) : Object {
