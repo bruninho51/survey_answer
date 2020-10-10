@@ -29,6 +29,18 @@ export default class Db {
         }
     }
 
+    public static async dropCollection(collectionName: string) {
+
+        if (this.client) {
+            const collections = (await this.client.db(this.dbName).listCollections().toArray()).map(collection => collection.name);
+            if (collections.includes(collectionName)) {
+                await this.client.db(this.dbName).dropCollection(collectionName);
+            }
+        } else {
+            throw new Error('dropCollection: Db não encontrado');
+        }
+    }
+
     public static close() {
         if (this.client) {
             this.client.close()

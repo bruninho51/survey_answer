@@ -7,11 +7,20 @@ import jwt, { TokenExpiredError } from "jsonwebtoken";
 import HttpTokenExpiredExeception from "./exception/http/HttpTokenExpiredException";
 import { IUserRepository } from "./repository/UserRepository";
 import { IUserModel } from "./model/UserModel";
+import Seed from "./seeds";
 
 dotenv.config({ path: '/app/.env' });
 
 Container.set('db', new Db);
 useContainer(Container);
+
+// generate seeds
+if (process.env.NODE_ENV === 'development') {
+  const seed : Seed = Container.get('seed');
+  Container.set('seed', new Seed);
+  seed.generate();
+}
+
 const app = createExpressServer({
   controllers: [__dirname + "/controller/*.ts"],
   middlewares: [__dirname + "/middlewares/*.ts"],

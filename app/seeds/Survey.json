@@ -1,0 +1,44 @@
+[
+    {
+        "_id": "5f7a755546be380054346139",
+        "name": "Questionário Share",
+        "description": "Questionário pesquisa de share",
+        "expiration": "1994-11-05T13:15:30.000Z",
+        "owner": {
+            "_id": "5f7a74c745b3ac0048df5677",
+            "name": "João",
+            "lastName": "Limão Silva",
+            "dateOfBirth": "1980-04-23T00:00:00.000Z",
+            "email": "joao.limao@fastmail.com",
+            "pictureUrl": null,
+            "username": "joao.limao"
+        },
+        "asks": [
+            {
+                "_id": "5f7a755546be38005434613a",
+                "title": "Share Marca Y",
+                "type": "Text",
+                "order": 1,
+                "required": true
+            },
+            {
+                "_id": "5f7a755546be38005434613b",
+                "title": "Share Marca Y",
+                "type": "Text",
+                "order": 1,
+                "required": false
+            },
+            {
+                "_id": "5f7a755546be38005434613d",
+                "title": "Share Marca Z",
+                "multipleSelect": false,
+                "options": [
+                    "MARCA Z1"
+                ],
+                "type": "Select",
+                "order": 2,
+                "required": false
+            }
+        ]
+    }
+]
