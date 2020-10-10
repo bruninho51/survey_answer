@@ -1,6 +1,6 @@
 import { IsDate, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { validate as modelValidate } from "class-validator";
-import { SurveyDTO } from "../dto/SurveyDTO";
+import { RegisterSurveyDTO } from "../dto/RegisterSurveyDTO";
 import { IAskModel } from "./AskModel";
 import { IUserModel } from "./UserModel";
 
@@ -19,7 +19,7 @@ export interface ISurveyModel {
     setAsks(asks : Array<IAskModel>) : ISurveyModel;
     addAsk(ask: IAskModel) : ISurveyModel;
     validate() : Promise<any>;
-    populate(surveyDTO : SurveyDTO) : ISurveyModel;
+    populate(surveyDTO : RegisterSurveyDTO) : ISurveyModel;
 }
 
 export default class SurveyModel implements ISurveyModel {
@@ -112,8 +112,7 @@ export default class SurveyModel implements ISurveyModel {
         return modelValidate(this);
     }
 
-    populate(surveyDTO: SurveyDTO): ISurveyModel {
-        this.setId(surveyDTO.id);
+    populate(surveyDTO: RegisterSurveyDTO): ISurveyModel {
         this.setName(surveyDTO.name);
         this.setDescription(surveyDTO.description);
         this.setExpiration(surveyDTO.expiration);

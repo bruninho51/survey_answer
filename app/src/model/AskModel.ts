@@ -90,7 +90,6 @@ export default class AskModel implements IAskModel {
     }
 
     populate(askDTO: AskDTO): IAskModel {
-        this.setId(askDTO.id);
         this.setTitle(askDTO.title);
         this.setType(askDTO.type);
         this.setRequired(askDTO.required);

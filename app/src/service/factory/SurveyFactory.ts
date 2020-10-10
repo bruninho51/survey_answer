@@ -1,5 +1,6 @@
 import { ObjectID } from "mongodb";
 import { IAskModel } from "../../model/AskModel";
+import AskSelectModel, { IAskSelectModel } from "../../model/AskSelectModel";
 import { Inject, Service } from "typedi";
 import SurveyModel, { ISurveyModel } from "../../model/SurveyModel";
 import { IUserFactory } from "./UserModelFactory";
@@ -32,14 +33,28 @@ export class SurveyFactory implements ISurveyFactory {
             .setExpiration(new Date(mongoMap.expiration))
             .setOwner(this.userFactory.createByMongoMap(mongoMap.owner))
             .setAsks([
-                ...mongoMap.asks.map((askMap : any) : IAskModel => (
-                    this.askFactory.create(askMap.type)
-                        .setId(askMap._id.toString())
-                        .setTitle(askMap.name)
-                        .setType(askMap.type)
-                        .setOrder(askMap.order)
-                        .setRequired(askMap.required)
-                ))
+                ...mongoMap.asks.map((askMap : any) => {
+                    let askModel : IAskModel = this.askFactory.create(askMap.type);
+                    // poderia usar o populate para evitar o if
+                    if (askModel instanceof AskSelectModel) {
+                        askModel.setMultipleSelect(askMap.multipleSelect)
+                            .setOptions(askMap.options)
+                            .setId(askMap._id.toString())
+                            .setTitle(askMap.title)
+                            .setType(askMap.type)
+                            .setOrder(askMap.order)
+                            .setRequired(askMap.required);
+                    } else {
+                        askModel
+                            .setId(askMap._id.toString())
+                            .setTitle(askMap.title)
+                            .setType(askMap.type)
+                            .setOrder(askMap.order)
+                            .setRequired(askMap.required);
+                    }
+
+                    return askModel;
+                })
             ]);
     }
 
@@ -60,13 +75,27 @@ export class SurveyFactory implements ISurveyFactory {
                 username: surveyModel.getOwner().getUsername()
             },
             asks: [
-                ...surveyModel.getAsks().map((askModel : IAskModel) => ({
-                    _id: askModel.getId() ?? new ObjectID(),
-                    title: askModel.getTitle(),
-                    type: askModel.getType(),
-                    order: askModel.getOrder(),
-                    required: askModel.getRequired()
-                }))
+                ...surveyModel.getAsks().map((askModel : IAskModel) => {
+                    if (askModel instanceof AskSelectModel) {
+                        return {
+                            _id: askModel.getId() ?? new ObjectID(),
+                            title: askModel.getTitle(),
+                            multipleSelect: askModel.getMultipleSelect(),
+                            options: askModel.getOptions(),
+                            type: askModel.getType(),
+                            order: askModel.getOrder(),
+                            required: askModel.getRequired()
+                        }
+                    } else {
+                        return {
+                            _id: askModel.getId() ?? new ObjectID(),
+                            title: askModel.getTitle(),
+                            type: askModel.getType(),
+                            order: askModel.getOrder(),
+                            required: askModel.getRequired()
+                        }
+                    }
+                })
             ]
         };
     }
