@@ -61,12 +61,12 @@ export class SurveyFactory implements ISurveyFactory {
     createMongoMap(surveyModel : ISurveyModel): Object {
         
         return {
-            _id: surveyModel.getId() ?? new ObjectID(),
+            _id: new ObjectID(surveyModel.getId()) ?? new ObjectID(),
             name: surveyModel.getName(),
             description: surveyModel.getDescription(),
             expiration: surveyModel.getExpiration(),
             owner: {
-                _id: surveyModel.getOwner().getId(),
+                _id: new ObjectID(surveyModel.getOwner().getId()),
                 name: surveyModel.getOwner().getName(),
                 lastName: surveyModel.getOwner().getLastName(),
                 dateOfBirth: surveyModel.getOwner().getDateOfBirth(),
@@ -78,7 +78,7 @@ export class SurveyFactory implements ISurveyFactory {
                 ...surveyModel.getAsks().map((askModel : IAskModel) => {
                     if (askModel instanceof AskSelectModel) {
                         return {
-                            _id: askModel.getId() ?? new ObjectID(),
+                            _id: new ObjectID(askModel.getId()) ?? new ObjectID(),
                             title: askModel.getTitle(),
                             multipleSelect: askModel.getMultipleSelect(),
                             options: askModel.getOptions(),
@@ -88,7 +88,7 @@ export class SurveyFactory implements ISurveyFactory {
                         }
                     } else {
                         return {
-                            _id: askModel.getId() ?? new ObjectID(),
+                            _id: new ObjectID(askModel.getId()) ?? new ObjectID(),
                             title: askModel.getTitle(),
                             type: askModel.getType(),
                             order: askModel.getOrder(),

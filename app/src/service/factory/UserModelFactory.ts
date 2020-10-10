@@ -23,7 +23,7 @@ export class UserFactory implements IUserFactory {
 
     createMongoMap(userModel : IUserModel) : Object {
         return {
-            _id: userModel.getId() ?? new ObjectID(),
+            _id: new ObjectID(userModel.getId()) ?? new ObjectID(),
             name: userModel.getName(),
             lastName: userModel.getLastName(),
             dateOfBirth: userModel.getDateOfBirth(),
