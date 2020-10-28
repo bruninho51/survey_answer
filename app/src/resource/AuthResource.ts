@@ -7,10 +7,10 @@ export class AuthResource {
     private user: IUserModel;
     
     constructor(user: IUserModel, token: string, authenticated: boolean) {
-        this.authenticated = authenticated;
-        this.token = token;
+      this.authenticated = authenticated;
+      this.token = token;
 
-        user.setPassword(null);
-        this.user = user;
+      user.setPassword(null);
+      this.user = user;
     }
 }

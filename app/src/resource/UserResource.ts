@@ -7,24 +7,24 @@ export class UserResource {
 
     constructor(user : IUserModel) {
 
-        user.setPassword(null);
-        this.user = user;
-        this.createLinks();
+      user.setPassword(null);
+      this.user = user;
+      this.createLinks();
     }
 
     private createLinks() {
 
-        this.links.push(
-            {
-                type: "GET",
-                rel: "self",
-                uri: process.env.BASE_URL + "/user/" + this.user.getId()
-            }, 
-            {
-                type: "PUT",
-                rel: "self",
-                uri: process.env.BASE_URL + "/user/" + this.user.getId()
-            }
-        );
+      this.links.push(
+        {
+          type: "GET",
+          rel: "self",
+          uri: process.env.BASE_URL + "/user/" + this.user.getId()
+        }, 
+        {
+          type: "PUT",
+          rel: "self",
+          uri: process.env.BASE_URL + "/user/" + this.user.getId()
+        }
+      );
     }
 }

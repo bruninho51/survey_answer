@@ -12,75 +12,75 @@ export interface ISurveyRepository {
     getAll(options : PagingOptions) : Promise<Array<ISurveyModel>>;
 }
 
-@Service('survey.repository')
+@Service("survey.repository")
 export default class SurveyRepository implements ISurveyRepository {
 
-    @Inject('survey.factory')
+    @Inject("survey.factory")
     private surveyFactory : ISurveyFactory;
 
     async save(survey : ISurveyModel) : Promise<ISurveyModel> {
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Surveys');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Surveys");
 
-        let result = await collection.insertOne(
-            this.surveyFactory.createMongoMap(survey));
+      const result = await collection.insertOne(
+        this.surveyFactory.createMongoMap(survey));
 
-        let surveyUpToDate : ISurveyModel = this.surveyFactory.createByMongoMap(result.ops[0]);
+      const surveyUpToDate : ISurveyModel = this.surveyFactory.createByMongoMap(result.ops[0]);
 
-        return surveyUpToDate;
+      return surveyUpToDate;
     }
 
     async getById(id: string) : Promise<ISurveyModel> {
 
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Surveys');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Surveys");
 
-        try {
+      try {
 
-            let result = await collection.findOne({ _id: new ObjectID(id) });
-            if (result) {
-                return this.surveyFactory.createByMongoMap(result);
-            }
-
-            return null;
-
-        } catch (err) {
-            return null;
+        const result = await collection.findOne({ _id: new ObjectID(id) });
+        if (result) {
+          return this.surveyFactory.createByMongoMap(result);
         }
+
+        return null;
+
+      } catch (err) {
+        return null;
+      }
     }
 
     async countAll() : Promise<number> {
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Surveys');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Surveys");
 
-        return collection.countDocuments();
+      return collection.countDocuments();
     }
 
     async getAll({ limit = 10, page = 1 } : PagingOptions) : Promise<Array<ISurveyModel>> {
-        let skip : number = (page - 1) * limit;
+      const skip : number = (page - 1) * limit;
 
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Surveys');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Surveys");
 
-        let surveysList : Array<ISurveyModel> = [];
+      const surveysList : Array<ISurveyModel> = [];
 
-        try {
-            let result = await collection.find({}, { limit, skip });
-            if (result) {
-                let arrResult = await result.toArray();
-                arrResult.forEach(mongoMap => {
-                    surveysList.push(
-                        this.surveyFactory.createByMongoMap(mongoMap));
-                })
-            }
-
-            return surveysList;
-        } catch (err) {
-            return surveysList;
+      try {
+        const result = await collection.find({}, { limit, skip });
+        if (result) {
+          const arrResult = await result.toArray();
+          arrResult.forEach(mongoMap => {
+            surveysList.push(
+              this.surveyFactory.createByMongoMap(mongoMap));
+          });
         }
+
+        return surveysList;
+      } catch (err) {
+        return surveysList;
+      }
     }
 }

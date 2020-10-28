@@ -17,57 +17,57 @@ import { SurveysResource } from "../resource/SurveysResource";
 @JsonController("/survey")
 export class SurveyController {
 
-    @Inject('survey.factory')
+    @Inject("survey.factory")
     private surveyFactory : ISurveyFactory;
 
-    @Inject('survey.repository')
+    @Inject("survey.repository")
     private surveyRepository : ISurveyRepository;
 
-    @Inject('user.repository')
+    @Inject("user.repository")
     private userRepository : IUserRepository;
 
-    @Inject('ask.factory')
+    @Inject("ask.factory")
     private askFactory : IAskFactory;
 
     @Post()
-    async cadSurvey(@Body() surveyDTO: RegisterSurveyDTO) {
+    async cadSurvey(@Body() surveyDTO: RegisterSurveyDTO) : Promise<SurveyResource> {
         
-        let surveyModel : ISurveyModel = this.surveyFactory.create().populate(surveyDTO);
+      const surveyModel : ISurveyModel = this.surveyFactory.create().populate(surveyDTO);
         
-        surveyModel.setOwner(await this.userRepository.getById(surveyDTO.owner.id));
+      surveyModel.setOwner(await this.userRepository.getById(surveyDTO.owner.id));
 
-        try {
-            surveyModel.setAsks(surveyDTO.asks.map((askDTO : AskDTO) => {
-                return this.askFactory.create(askDTO.type).populate(askDTO);
-            }));
+      try {
+        surveyModel.setAsks(surveyDTO.asks.map((askDTO : AskDTO) => {
+          return this.askFactory.create(askDTO.type).populate(askDTO);
+        }));
             
-            return new SurveyResource(
-                await this.surveyRepository.save(surveyModel));
+        return new SurveyResource(
+          await this.surveyRepository.save(surveyModel));
 
-        } catch (e) {
-            if (e instanceof InvalidAskTypeException) {
-                throw new HttpInvalidAskTypeException();
-            } else {
-                throw new InternalServerError("An error ocurred on save survey.");
-            }
+      } catch (e) {
+        if (e instanceof InvalidAskTypeException) {
+          throw new HttpInvalidAskTypeException();
+        } else {
+          throw new InternalServerError("An error ocurred on save survey.");
         }
+      }
     }
 
-    @Get('/:id')
+    @Get("/:id")
     @Authorized()
     @OnUndefined(HttpSurveyNotFoundError)
-    async getSurvey(@Param('id') id : string) {
-        let survey : ISurveyModel = await this.surveyRepository.getById(id);
-        if (survey) return new SurveyResource(survey);
+    async getSurvey(@Param("id") id : string) : Promise<SurveyResource> {
+      const survey : ISurveyModel = await this.surveyRepository.getById(id);
+      if (survey) return new SurveyResource(survey);
     }
 
-    @Get('/')
+    @Get("/")
     @Authorized()
     @OnUndefined(HttpSurveyNotFoundException)
-    async getAllSurveys(@QueryParam('page') page : number = 1, @QueryParam('limit') limit : number = 10) {
-        let surveysList : Array<ISurveyModel> = await this.surveyRepository.getAll({ page, limit });
-        let count : number = await this.surveyRepository.countAll();
+    async getAllSurveys(@QueryParam("page") page  = 1, @QueryParam("limit") limit  = 10) : Promise<SurveysResource> {
+      const surveysList : Array<ISurveyModel> = await this.surveyRepository.getAll({ page, limit });
+      const count : number = await this.surveyRepository.countAll();
 
-        return new SurveysResource(surveysList, { limit, page }, count);
+      return new SurveysResource(surveysList, { limit, page }, count);
     }
 }

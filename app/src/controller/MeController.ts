@@ -5,9 +5,9 @@ import { IUserModel } from "../model/UserModel";
 @JsonController("/me")
 export class MeController {
 
-    @Get("/")
-    @Authorized()
-    getMe(@CurrentUser({ required: true }) user: IUserModel) {
-        return new UserResource(user);
-    }
+  @Get("/")
+  @Authorized()
+  async getMe(@CurrentUser({ required: true }) user: IUserModel) : Promise<UserResource> {
+    return new UserResource(user);
+  }
 }

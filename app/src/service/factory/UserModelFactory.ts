@@ -9,28 +9,28 @@ export interface IUserFactory {
     createByMongoMap(mongoMap : any) : IUserModel;
 }
 
-@Service('user.factory')
+@Service("user.factory")
 export class UserFactory implements IUserFactory {
 
-    create() : IUserModel {
-        return new UserModel();
-    }
+  create() : IUserModel {
+    return new UserModel();
+  }
 
-    createByMongoMap(mongoMap : any) : IUserModel {
-        let userModel : IUserModel = this.create().populate({ ...mongoMap, id: mongoMap._id.toString() });
-        return userModel;
-    }
+  createByMongoMap(mongoMap : any) : IUserModel {
+    const userModel : IUserModel = this.create().populate({ ...mongoMap, id: mongoMap._id.toString() });
+    return userModel;
+  }
 
-    createMongoMap(userModel : IUserModel) : Object {
-        return {
-            _id: new ObjectID(userModel.getId()) ?? new ObjectID(),
-            name: userModel.getName(),
-            lastName: userModel.getLastName(),
-            dateOfBirth: userModel.getDateOfBirth(),
-            email: userModel.getEmail(),
-            pictureUrl: userModel.getPictureUrl(),
-            username: userModel.getUsername(),
-            password: userModel.getPassword()
-        };
-    }
+  createMongoMap(userModel : IUserModel) : Object {
+    return {
+      _id: new ObjectID(userModel.getId()) ?? new ObjectID(),
+      name: userModel.getName(),
+      lastName: userModel.getLastName(),
+      dateOfBirth: userModel.getDateOfBirth(),
+      email: userModel.getEmail(),
+      pictureUrl: userModel.getPictureUrl(),
+      username: userModel.getUsername(),
+      password: userModel.getPassword()
+    };
+  }
 }

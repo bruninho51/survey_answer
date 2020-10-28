@@ -11,27 +11,27 @@ import { AuthResource } from "../resource/AuthResource";
 @JsonController("/auth")
 export class AuthController {
 
-    @Inject('user.repository')
+    @Inject("user.repository")
     private repository : IUserRepository;
 
-    @Post('/')
+    @Post("/")
     @OnUndefined(HttpAuthenticationException)
-    async getToken(@BodyParam('username') username : string, @BodyParam('password') password : string) {
+    async getToken(@BodyParam("username") username : string, @BodyParam("password") password : string) : Promise<AuthResource> {
         
-        let passwordHash = crypto.createHash('sha256')
-            .update(process.env.SECRET + password)
-            .digest('hex');
+      const passwordHash = crypto.createHash("sha256")
+        .update(process.env.SECRET + password)
+        .digest("hex");
 
-        const user : IUserModel = await this.repository.getByUsernameAndPassword(username, passwordHash);
+      const user : IUserModel = await this.repository.getByUsernameAndPassword(username, passwordHash);
 
-        if (user) {
-            let token = jwt.sign({ id: user.getId() }, process.env.SECRET, {
-                expiresIn: process.env.TOKEN_TIME
-            });
+      if (user) {
+        const token = jwt.sign({ id: user.getId() }, process.env.SECRET, {
+          expiresIn: process.env.TOKEN_TIME
+        });
 
-            return new AuthResource(user, token, true);
-        }
+        return new AuthResource(user, token, true);
+      }
 
-        return;
+      return;
     }
 }

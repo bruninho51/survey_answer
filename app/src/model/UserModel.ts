@@ -1,5 +1,4 @@
 import { IsEmail, IsDate, Length, IsNotEmpty, validate as modelValidate, IsString, IsOptional } from "class-validator";
-//import { UserDTO } from "../dto/UserDTO";
 import { IsUniqueUserEmail } from "../validation/IsUniqueUserEmail";
 import { IsUniqueUsername } from "../validation/IsUniqueUsername";
 import crypto from "crypto";
@@ -60,108 +59,108 @@ export default class UserModel implements IUserModel {
     private password: string;
 
     getId() : string {
-        return this.id;
+      return this.id;
     }
 
     setId(id : string) : IUserModel {
-        this.id = id;
-        return this;
+      this.id = id;
+      return this;
     }
 
     getName(): string {
-        return this.name;
+      return this.name;
     }
 
     setName(name: string): IUserModel {
-        this.name = name;
-        return this;
+      this.name = name;
+      return this;
     }
 
     getLastName(): string {
-        return this.lastName;
+      return this.lastName;
     }
 
     setLastName(lastName: string): IUserModel {
-        this.lastName = lastName;
-        return this;
+      this.lastName = lastName;
+      return this;
     }
 
     getDateOfBirth(): Date {
-        return this.dateOfBirth;
+      return this.dateOfBirth;
     }
 
     setDateOfBirth(dateOfBirth: Date): IUserModel {
-        this.dateOfBirth = dateOfBirth;
-        return this;
+      this.dateOfBirth = dateOfBirth;
+      return this;
     }
 
     getEmail(): string {
-        return this.email;
+      return this.email;
     }
 
     setEmail(email: string): IUserModel {
-        this.email = email;
-        return this;
+      this.email = email;
+      return this;
     }
 
     getPicture(): Blob {
-        return this.picture;
+      return this.picture;
     }
     
     setPicture(picture: Blob): IUserModel {
-        this.picture = picture;
-        return this;
+      this.picture = picture;
+      return this;
     }
 
     getPictureUrl() : string {
-        return this.pictureUrl;
+      return this.pictureUrl;
     }
 
     setPictureUrl(pictureUrl : string) : IUserModel {
-        this.pictureUrl = pictureUrl;
-        return this;
+      this.pictureUrl = pictureUrl;
+      return this;
     }
 
     getUsername(): string {
-        return this.username;
+      return this.username;
     }
 
     setUsername(username: string): IUserModel {
-        this.username = username;
-        return this;
+      this.username = username;
+      return this;
     }
 
     getPassword(): string {
-        return this.password;
+      return this.password;
     }
 
     setPassword(password: string): IUserModel {
         
-        this.password = null;
-        if (password) {
-            const passwordHash = crypto.createHash('sha256')
-            .update(process.env.SECRET + password)
-            .digest('hex');
-            this.password = passwordHash;
-        }
+      this.password = null;
+      if (password) {
+        const passwordHash = crypto.createHash("sha256")
+          .update(process.env.SECRET + password)
+          .digest("hex");
+        this.password = passwordHash;
+      }
 
-        return this;
+      return this;
     }
 
     validate(): Promise<any> {
-        return modelValidate(this);
+      return modelValidate(this);
     }
 
     populate(userMap : any) : IUserModel {
-        this.setId(userMap.id);
-        this.setName(userMap.name);
-        this.setLastName(userMap.lastName);
-        this.setDateOfBirth(userMap.dateOfBirth);
-        this.setEmail(userMap.email);
-        this.setPictureUrl(userMap.pictureUrl);
-        this.setUsername(userMap.username);
-        this.setPassword(userMap.password);
+      this.setId(userMap.id);
+      this.setName(userMap.name);
+      this.setLastName(userMap.lastName);
+      this.setDateOfBirth(userMap.dateOfBirth);
+      this.setEmail(userMap.email);
+      this.setPictureUrl(userMap.pictureUrl);
+      this.setUsername(userMap.username);
+      this.setPassword(userMap.password);
 
-        return this;
+      return this;
     }
 }

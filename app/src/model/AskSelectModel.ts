@@ -21,40 +21,40 @@ export default class AskSelectModel extends AskModel implements IAskSelectModel 
     private multipleSelect : boolean;
 
     constructor() {
-        super();
-        this.options = [];
-        this.multipleSelect = false;
+      super();
+      this.options = [];
+      this.multipleSelect = false;
     }
     
     getMultipleSelect(): boolean {
-        return this.multipleSelect;
+      return this.multipleSelect;
     }
 
     setMultipleSelect(multipleSelect: boolean): IAskSelectModel {
-        multipleSelect && (this.multipleSelect = multipleSelect);
-        return this;
+      multipleSelect && (this.multipleSelect = multipleSelect);
+      return this;
     }
 
     getOptions(): Array<string> {
-        return this.options;
+      return this.options;
     }
     
     setOptions(options: Array<string>): IAskSelectModel {
-        options && (this.options = options);
-        return this;
+      options && (this.options = options);
+      return this;
     }
 
     addOption(option: string): IAskSelectModel {
-        option && this.options.push(option);
-        return this;
+      option && this.options.push(option);
+      return this;
     }
 
     populate(askDTO: AskDTO): IAskModel {
-        super.populate(askDTO);
-        this.setOptions(askDTO.options);
-        this.setMultipleSelect(askDTO.multipleSelect);
+      super.populate(askDTO);
+      this.setOptions(askDTO.options);
+      this.setMultipleSelect(askDTO.multipleSelect);
 
-        return this;
+      return this;
     }
 
 }

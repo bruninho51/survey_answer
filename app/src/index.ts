@@ -9,15 +9,15 @@ import { IUserRepository } from "./repository/UserRepository";
 import { IUserModel } from "./model/UserModel";
 import Seed from "./seeds";
 
-dotenv.config({ path: '/app/.env' });
+dotenv.config({ path: "/app/.env" });
 
-Container.set('db', new Db);
+Container.set("db", new Db);
 useContainer(Container);
 
 // generate seeds
-if (process.env.NODE_ENV === 'development') {
-  const seed : Seed = Container.get('seed');
-  Container.set('seed', new Seed);
+if (process.env.NODE_ENV === "development") {
+  const seed : Seed = Container.get("seed");
+  Container.set("seed", new Seed);
   seed.generate();
 }
 
@@ -27,13 +27,13 @@ const app = createExpressServer({
   authorizationChecker: async (action: Action, roles: string[]) => {
 
     const rawToken = action.request.headers["authorization"];
-    if (rawToken && rawToken.startsWith('Bearer ')) {
+    if (rawToken && rawToken.startsWith("Bearer ")) {
 
       const token = rawToken.slice(7, rawToken.length);
       try {
-        const decoded: any = jwt.verify(token, process.env.SECRET)
+        const decoded: any = jwt.verify(token, process.env.SECRET);
         if (decoded) {
-          const repository : IUserRepository = Container.get('user.repository');
+          const repository : IUserRepository = Container.get("user.repository");
           action.request.me = repository.getById(decoded.id);
           return true;
         }

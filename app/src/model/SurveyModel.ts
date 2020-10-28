@@ -46,78 +46,78 @@ export default class SurveyModel implements ISurveyModel {
     private asks : Array<IAskModel>;
 
     constructor() {
-        this.asks = [];
+      this.asks = [];
     }
 
     getId(): string {
-        return this.id;
+      return this.id;
     }
 
     setId(id: string): ISurveyModel {
-        this.id = id;
-        return this;
+      this.id = id;
+      return this;
     }
 
     getName(): string {
-        return this.name;
+      return this.name;
     }
 
     setName(name: string): ISurveyModel {
-        this.name = name;
-        return this;
+      this.name = name;
+      return this;
     }
 
     getDescription(): string {
-        return this.description;
+      return this.description;
     }
 
     setDescription(description: string): ISurveyModel {
-        this.description = description;
-        return this;
+      this.description = description;
+      return this;
     }
 
     getExpiration(): Date {
-        return this.expiration;
+      return this.expiration;
     }
 
     setExpiration(expiration: Date): ISurveyModel {
-        this.expiration = expiration;
-        return this;
+      this.expiration = expiration;
+      return this;
     }
 
     getOwner(): IUserModel {
-        return this.owner;
+      return this.owner;
     }
 
     setOwner(owner: IUserModel): ISurveyModel {
-        this.owner = owner;
-        return this;
+      this.owner = owner;
+      return this;
     }
 
     getAsks(): Array<IAskModel> {
-        return this.asks;
+      return this.asks;
     }
 
     setAsks(asks: Array<IAskModel>): ISurveyModel {
-        this.asks = asks;
-        return this;
+      this.asks = asks;
+      return this;
     }
 
     addAsk(ask: IAskModel) : ISurveyModel {
-        this.asks.push(ask);
-        return this;
+      this.asks.push(ask);
+      return this;
     }
     
     validate(): Promise<any> {
-        return modelValidate(this);
+      return modelValidate(this);
     }
 
     populate(surveyDTO: RegisterSurveyDTO): ISurveyModel {
-        this.setName(surveyDTO.name);
-        this.setDescription(surveyDTO.description);
-        this.setExpiration(surveyDTO.expiration);
+      this.setName(surveyDTO.name);
+      this.setDescription(surveyDTO.description);
+      this.setExpiration(surveyDTO.expiration);
 
-        return this;
+      return this;
     }
 
 }

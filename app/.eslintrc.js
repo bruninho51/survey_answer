@@ -1,13 +1,19 @@
 module.exports = {
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      sourceType: 'module',
-      project: './tsconfig.json',
-    },
-    extends:  [
-      'airbnb-base', // Adicionaas regras do Airbnb Style Guide
-      'plugin:@typescript-eslint/recommended',  // Adiciona as recomendações padrões @typescript-eslint/eslint-plugin
-      'prettier/@typescript-eslint',  // Adiciona as configurações do prettier para evitar conflitos de regras @typescript-eslint/eslint-plugin
-      'plugin:prettier/recommended',  // Adiciona o plugin do prettier
-    ],
-}
+  env: {
+    node: true,
+    es6: true,
+  },
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+  },
+  plugins: ["@typescript-eslint", "prettier"],
+  rules: {
+    indent: ["error", 2],
+    "linebreak-style": ["error", "windows"],
+    quotes: ["error", "double"],
+    semi: [2, "always"],
+  },
+};

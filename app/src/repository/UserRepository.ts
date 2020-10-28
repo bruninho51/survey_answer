@@ -16,111 +16,111 @@ export interface IUserRepository {
     getByUsernameAndPassword(username : string, password : string) : Promise<IUserModel>;
 }
 
-@Service('user.repository')
+@Service("user.repository")
 export default class UserRepository implements IUserRepository {
 
-    @Inject('user.factory')
+    @Inject("user.factory")
     private userFactory : IUserFactory;
 
     async save(user : IUserModel) : Promise<IUserModel> {
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Users');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Users");
         
-        let result = await collection.insertOne(
-            this.userFactory.createMongoMap(user));
+      const result = await collection.insertOne(
+        this.userFactory.createMongoMap(user));
 
-        user.setId(result.ops[0]._id.toString());
+      user.setId(result.ops[0]._id.toString());
 
-        return user;
+      return user;
     }
 
     async getById(id: string) : Promise<IUserModel> {
         
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Users');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Users");
 
-        try {
+      try {
 
-            let result = await collection.findOne({ _id: new ObjectID(id) });
-            if (result) {
-                return this.userFactory.createByMongoMap(result);
-            }
-
-            return null;
-
-        } catch (err) {
-            return null;
+        const result = await collection.findOne({ _id: new ObjectID(id) });
+        if (result) {
+          return this.userFactory.createByMongoMap(result);
         }
+
+        return null;
+
+      } catch (err) {
+        return null;
+      }
 
     }
 
     async countAll() : Promise<number> {
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Users');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Users");
 
-        return collection.countDocuments();
+      return collection.countDocuments();
     }
 
     async getAll({ limit = 10, page = 1 } : PagingOptions) : Promise<Array<IUserModel>> {
        
-        let skip : number = (page - 1) * limit;
+      const skip : number = (page - 1) * limit;
 
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Users');
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Users");
 
-        let usersList : Array<IUserModel> = [];
+      const usersList : Array<IUserModel> = [];
 
-        try {
-            let result = await collection.find({}, { limit, skip });
-            if (result) {
-                let arrResult = await result.toArray();
-                arrResult.forEach(mongoMap => {
-                    usersList.push(
-                        this.userFactory.createByMongoMap(mongoMap));
-                });
-            }
-    
-            return usersList;
-        } catch (err) {
-            return usersList;
+      try {
+        const result = await collection.find({}, { limit, skip });
+        if (result) {
+          const arrResult = await result.toArray();
+          arrResult.forEach(mongoMap => {
+            usersList.push(
+              this.userFactory.createByMongoMap(mongoMap));
+          });
         }
+    
+        return usersList;
+      } catch (err) {
+        return usersList;
+      }
     }
 
     async update(user : IUserModel): Promise<IUserModel> {
-        throw new Error('not implemented yet');
+      throw new Error("not implemented yet");
     }
 
     async emailExists(email : string) : Promise<boolean> {
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Users');
-        let res = await collection.findOne({ email });
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Users");
+      const res = await collection.findOne({ email });
 
-        return !!res;
+      return !!res;
     }
 
     async usernameExists(username : string) : Promise<boolean> {
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Users');
-        let res = await collection.findOne({ username });
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Users");
+      const res = await collection.findOne({ username });
         
-        return !!res;
+      return !!res;
     }
 
     async getByUsernameAndPassword(username : string, password : string) : Promise<IUserModel> {
-        await Db.connect();
-        let db = Db.getDb();
-        let collection = db.collection('Users');
-        let result = await collection.findOne({ username, password });
-        if (result) {
-            return this.userFactory.createByMongoMap(result);
-        }
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Users");
+      const result = await collection.findOne({ username, password });
+      if (result) {
+        return this.userFactory.createByMongoMap(result);
+      }
 
-        return null;
+      return null;
     }
 }
