@@ -10,6 +10,7 @@ export interface ISurveyRepository {
     getById(id: string) : Promise<ISurveyModel>;
     countAll() : Promise<number>;
     getAll(options : PagingOptions) : Promise<Array<ISurveyModel>>;
+    getByAskId(askId: string): Promise<ISurveyModel>;
 }
 
 @Service("survey.repository")
@@ -81,6 +82,26 @@ export default class SurveyRepository implements ISurveyRepository {
         return surveysList;
       } catch (err) {
         return surveysList;
+      }
+    }
+
+    async getByAskId(askId: string): Promise<ISurveyModel> {
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Surveys");
+
+      try {
+        //{ stock : { $elemMatch : { country : "01", "warehouse.code" : "02" } } }
+        const result = await collection.findOne({ asks: { $elemMatch: { _id: new ObjectID(askId) } } });
+        //const result = await collection.findOne({ asks:  [{ _id: new ObjectID(askId) }] });
+        if (result) {
+          return this.surveyFactory.createByMongoMap(result);
+        }
+
+        return null;
+
+      } catch (err) {
+        return null;
       }
     }
 }

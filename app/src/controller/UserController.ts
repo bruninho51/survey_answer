@@ -18,7 +18,6 @@ export class UserController {
     private userFactory : UserFactory;
 
     @Post("/")
-    @Authorized()
     async cadUser(@Body() userDTO : RegisterUserDTO) : Promise<UserResource> {
       const userModel : IUserModel = this.userFactory.create().populate(userDTO);
       try {
