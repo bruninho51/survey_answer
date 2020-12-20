@@ -1,6 +1,5 @@
 import { ObjectID } from "mongodb";
 import { IAskModel } from "../../model/AskModel";
-import AskSelectModel from "../../model/AskSelectModel";
 import { Inject, Service } from "typedi";
 import SurveyModel, { ISurveyModel } from "../../model/SurveyModel";
 import { IUserFactory } from "./UserModelFactory";
@@ -10,6 +9,8 @@ export interface ISurveyFactory {
     create() : ISurveyModel;
     createMongoMap(surveyModel : ISurveyModel) : Object;
     createByMongoMap(mongoMap : any) : ISurveyModel;
+    createSurveyAnsweredByMongoMap(mongoMap: any): ISurveyModel;
+    createSurveyAnsweredMongoMap(surveyModel: ISurveyModel): Object;
 }
 
 @Service("survey.factory")
@@ -32,30 +33,13 @@ export class SurveyFactory implements ISurveyFactory {
         .setDescription(mongoMap.description)
         .setExpiration(new Date(mongoMap.expiration))
         .setOwner(this.userFactory.createByMongoMap(mongoMap.owner))
-        .setAsks([
-          ...mongoMap.asks.map((askMap : any) => {
-            const askModel : IAskModel = this.askFactory.create(askMap.type);
-            // poderia usar o populate para evitar o if
-            if (askModel instanceof AskSelectModel) {
-              askModel.setMultipleSelect(askMap.multipleSelect)
-                .setOptions(askMap.options)
-                .setId(askMap._id.toString())
-                .setTitle(askMap.title)
-                .setType(askMap.type)
-                .setOrder(askMap.order)
-                .setRequired(askMap.required);
-            } else {
-              askModel
-                .setId(askMap._id.toString())
-                .setTitle(askMap.title)
-                .setType(askMap.type)
-                .setOrder(askMap.order)
-                .setRequired(askMap.required);
-            }
+        .setAsks([ ...mongoMap.asks.map((askMap : any) => this.askFactory.createByMongoMap(askMap)) ]);
+    }
 
-            return askModel;
-          })
-        ]);
+    createSurveyAnsweredByMongoMap(mongoMap: any): ISurveyModel {
+      const surveyModel = this.createByMongoMap(mongoMap)
+        .setAsks([ ...mongoMap.asks.map((askMap : any) => this.askFactory.createAskAnsweredByMongoMap(askMap)) ]);
+      return surveyModel;
     }
 
     createMongoMap(surveyModel : ISurveyModel): Object {
@@ -74,29 +58,13 @@ export class SurveyFactory implements ISurveyFactory {
           pictureUrl: surveyModel.getOwner().getPictureUrl(),
           username: surveyModel.getOwner().getUsername()
         },
-        asks: [
-          ...surveyModel.getAsks().map((askModel : IAskModel) => {
-            if (askModel instanceof AskSelectModel) {
-              return {
-                _id: new ObjectID(askModel.getId()) ?? new ObjectID(),
-                title: askModel.getTitle(),
-                multipleSelect: askModel.getMultipleSelect(),
-                options: askModel.getOptions(),
-                type: askModel.getType(),
-                order: askModel.getOrder(),
-                required: askModel.getRequired()
-              };
-            } else {
-              return {
-                _id: new ObjectID(askModel.getId()) ?? new ObjectID(),
-                title: askModel.getTitle(),
-                type: askModel.getType(),
-                order: askModel.getOrder(),
-                required: askModel.getRequired()
-              };
-            }
-          })
-        ]
+        asks: [ ...surveyModel.getAsks().map((askModel : IAskModel) => this.askFactory.createMongoMap(askModel)) ]
       };
+    }
+
+    createSurveyAnsweredMongoMap(surveyModel: ISurveyModel): Object {
+      return Object.assign(this.createMongoMap(surveyModel), {
+        asks: [ ...surveyModel.getAsks().map((askModel : IAskModel) => this.askFactory.createAskAnsweredMongoMap(askModel)) ]
+      });
     }
 }

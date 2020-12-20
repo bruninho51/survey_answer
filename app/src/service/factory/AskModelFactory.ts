@@ -1,17 +1,24 @@
 import AskSelectModel from "../../model/AskSelectModel";
-import { Service } from "typedi";
-import AskModel, { IAskModel } from "../../model/AskModel";
+import { Inject, Service } from "typedi";
+import AskModel, { IAskModel, TypeAskAnswerModel } from "../../model/AskModel";
 import { AskTypeModel } from "../../model/AskTypeModel";
 import { InvalidAskTypeException } from "../../exception";
 import { ObjectID } from "mongodb";
-
+import { IUserFactory } from "./UserModelFactory";
+import { AskAnswerModel } from "../../model/AskModel";
 export interface IAskFactory {
     create(askType: string) : IAskModel;
     createMongoMap(askModel: IAskModel) : Object;
+    createAskAnsweredMongoMap(askModel: IAskModel): Object;
+    createAskAnsweredByMongoMap(askMap: any): IAskModel;
+    createByMongoMap(askMap: any): IAskModel;
 }
 
 @Service("ask.factory")
 export class AskFactory implements IAskFactory {
+
+  @Inject("user.factory")
+    private userFactory : IUserFactory;
 
   create(askType: string) : IAskModel {
 
@@ -50,6 +57,52 @@ export class AskFactory implements IAskFactory {
         order: askModel.getOrder(),
         required: askModel.getRequired()
       };
+
+    return askMap;
+  }
+
+  createByMongoMap(askMap: any): IAskModel {
+    const askModel : IAskModel = this.create(askMap.type);
+    if (askModel instanceof AskSelectModel) {
+      askModel.setMultipleSelect(askMap.multipleSelect)
+        .setOptions(askMap.options)
+        .setId(askMap._id.toString())
+        .setTitle(askMap.title)
+        .setType(askMap.type)
+        .setOrder(askMap.order)
+        .setRequired(askMap.required);
+    } else {
+      askModel
+        .setId(askMap._id.toString())
+        .setTitle(askMap.title)
+        .setType(askMap.type)
+        .setOrder(askMap.order)
+        .setRequired(askMap.required);
+    }
+
+    return askModel;
+  }
+
+  createAskAnsweredByMongoMap(askMap: any): IAskModel {
+    const userModel = this.userFactory.createByMongoMap(askMap.answer.answeredByUser);
+    const askAnswerModel = new AskAnswerModel();
+    askAnswerModel.setValue(askMap.answer.value);
+    askAnswerModel.setAnsweredByUser(userModel);
+
+    const askModel = this.createByMongoMap(askMap);
+    askModel.setAnswer(askAnswerModel);
+
+    return askModel;
+  }
+
+  createAskAnsweredMongoMap(askModel: IAskModel): Object {
+
+    const answer: TypeAskAnswerModel = {
+      value: askModel.getAnswer().getValue(),
+      user: askModel.getAnswer().getAnsweredByUser()
+    };
+
+    const askMap: any = Object.assign({ answer }, this.createMongoMap(askModel));
 
     return askMap;
   }

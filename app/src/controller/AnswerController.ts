@@ -1,31 +1,42 @@
-import { Authorized, Body, InternalServerError, JsonController, Post } from "routing-controllers";
-import { IAnswerFactory } from "../service/factory/AnswerModelFactory";
+import { Authorized, Body, CurrentUser, InternalServerError, JsonController, Post } from "routing-controllers";
 import { Inject } from "typedi";
-import { AnswerDTO } from "../dto/AnswerDTO";
-import { IAnswerModel } from "../model/AnswerModel";
-import { IAnswerRepository } from "../repository/AnswerRepository";
-import { AnswerResource } from "../resource/AnswerResource";
-
+import { IUserModel } from "../model/UserModel";
+import { SurveyAnswerDTO } from "../dto/SurveyAnswerDTO";
+import { ISurveyRepository } from "../repository/SurveyRepository";
+import { HttpInvalidAskException } from "../exception";
+import { AskAnswerModel } from "../model/AskModel";
+import { SurveyResource } from "../resource/SurveyResource";
 @JsonController("/answer")
 export class AnswerController {
 
-    @Inject("answer.factory")
-    private answerFactory : IAnswerFactory;
-
-    @Inject("answer.repository")
-    private answerRepository: IAnswerRepository;
+    @Inject("survey.repository")
+    private surveyRepository: ISurveyRepository;
 
     @Post("/")
-    async cadAnswer(@Body() answerDTO: AnswerDTO) : Promise<AnswerResource> {
-      // Em vez de fazer da forma atual, você pode salvar na collection Answers o Survey com uma propriedade value
-      // em cada ask + id do usuário que respondeu
-      const answerModel : IAnswerModel = await this.answerFactory.create(answerDTO.askId, answerDTO.value);
-      console.log(answerModel);
+    @Authorized()
+    async cadAnswer(@Body() answerDTO: SurveyAnswerDTO, @CurrentUser({ required: true }) user: IUserModel) : Promise<SurveyResource> {
+
+      const { surveyId, answers } = answerDTO;
+
+      const survey = await this.surveyRepository.getById(surveyId);
+
+      for (const answer of answers) {
+        const ask = survey.getAskById(answer.askId);
+        if (!ask) {
+          throw new HttpInvalidAskException();
+        }
+
+        const askAnswer = (new AskAnswerModel())
+          .setValue(answer.value)
+          .setAnsweredByUser(user);
+        
+        ask.setAnswer(askAnswer);
+      }
+
       try {
-        return new AnswerResource(await this.answerRepository.save(answerModel));
+        return new SurveyResource(await this.surveyRepository.saveAnswers(survey));
       } catch (error) {
-        console.log(error);
-        throw new InternalServerError("An error ocurred on save answer.");
+        throw new InternalServerError("An error ocurred on save answers.");
       }
     }
 }

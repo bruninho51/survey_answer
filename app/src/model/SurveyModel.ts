@@ -18,6 +18,7 @@ export interface ISurveyModel {
     getAsks() : Array<IAskModel>;
     setAsks(asks : Array<IAskModel>) : ISurveyModel;
     addAsk(ask: IAskModel) : ISurveyModel;
+    getAskById(askId: string): IAskModel; 
     validate() : Promise<any>;
     populate(surveyDTO : RegisterSurveyDTO) : ISurveyModel;
 }
@@ -106,6 +107,10 @@ export default class SurveyModel implements ISurveyModel {
     addAsk(ask: IAskModel) : ISurveyModel {
       this.asks.push(ask);
       return this;
+    }
+
+    getAskById(askId: string): IAskModel {
+      return this.asks.find(element => element.getId() === askId);
     }
     
     validate(): Promise<any> {

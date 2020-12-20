@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 import { IsAskExists } from "../validation/IsAskExists";
-export class AnswerDTO {
+export class AskAnswerDTO {
 
     @IsString()
     @IsNotEmpty()
