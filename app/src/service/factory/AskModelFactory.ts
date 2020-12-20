@@ -84,10 +84,8 @@ export class AskFactory implements IAskFactory {
   }
 
   createAskAnsweredByMongoMap(askMap: any): IAskModel {
-    const userModel = this.userFactory.createByMongoMap(askMap.answer.answeredByUser);
     const askAnswerModel = new AskAnswerModel();
     askAnswerModel.setValue(askMap.answer.value);
-    askAnswerModel.setAnsweredByUser(userModel);
 
     const askModel = this.createByMongoMap(askMap);
     askModel.setAnswer(askAnswerModel);
@@ -98,8 +96,7 @@ export class AskFactory implements IAskFactory {
   createAskAnsweredMongoMap(askModel: IAskModel): Object {
 
     const answer: TypeAskAnswerModel = {
-      value: askModel.getAnswer().getValue(),
-      user: askModel.getAnswer().getAnsweredByUser()
+      value: askModel.getAnswer().getValue()
     };
 
     const askMap: any = Object.assign({ answer }, this.createMongoMap(askModel));

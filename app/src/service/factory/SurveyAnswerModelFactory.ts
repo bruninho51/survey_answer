@@ -1,48 +1,52 @@
 import { Inject, Service } from "typedi";
 import { ISurveyModel } from "../../model/SurveyModel";
-import { ISurveyRepository } from "../../repository/SurveyRepository";
-import { IAskAnswerModel } from "../../model/AskAnswerModel";
 import { ObjectID } from "mongodb";
-import { IUserRepository } from "../../repository/UserRepository";
 import { IUserModel } from "../../model/UserModel";
 import SurveyAnswerModel, { ISurveyAnswerModel } from "../../model/SurveyAnswerModel";
+import { ISurveyFactory } from "./SurveyFactory";
+import { IUserFactory } from "./UserModelFactory";
 
 export interface ISurveyAnswerModelFactory {
-    create(surveyId: string, answers: IAskAnswerModel[], ownerId: string) : Promise<ISurveyAnswerModel>;
+    create(survey: ISurveyModel, answeredByUser: IUserModel): ISurveyAnswerModel;
     createMongoMap(surveyAnswerModel : ISurveyAnswerModel) : Object;
+    createByMongoMap(mongoMap: any): ISurveyAnswerModel;
 }
+
 
 @Service("surveyAnswer.factory")
 export class SurveyAnswerFactory implements ISurveyAnswerModelFactory {
 
-    @Inject("survey.repository")
-    private surveyRepository : ISurveyRepository;
+  @Inject("survey.factory")
+  private surveyFactory : ISurveyFactory;
 
-    @Inject("user.repository")
-    private userRepository: IUserRepository;
+  @Inject("user.factory")
+  private userFactory : IUserFactory;
 
-    async create(surveyId: string, answers: IAskAnswerModel[], ownerId: string): Promise<ISurveyAnswerModel> {
+  create(survey: ISurveyModel, answeredByUser: IUserModel): ISurveyAnswerModel {
 
-      const survey: ISurveyModel = await this.surveyRepository.getById(surveyId);
-      const owner: IUserModel = await this.userRepository.getById(ownerId);
-      if (survey && owner) {
-        const answer: ISurveyAnswerModel = new SurveyAnswerModel();
-        answer.setSurvey(survey);
-        answer.setOwner(owner);
-        answer.setAsks(answers);
+    const surveyAnswerModel = new SurveyAnswerModel();
+    surveyAnswerModel.setSurvey(survey);
+    surveyAnswerModel.setAnsweredByUser(answeredByUser);
 
-        return answer;
-      }
+    return surveyAnswerModel;
+  }
 
-      return null;
-    }
+  createMongoMap(surveyAnswerModel : ISurveyAnswerModel) : Object {
+    return {
+      _id: new ObjectID(surveyAnswerModel.getId()) ?? new ObjectID(),
+      survey: this.surveyFactory.createSurveyAnsweredMongoMap(surveyAnswerModel.getSurvey()),
+      answeredByUser: this.userFactory.createMongoMap(surveyAnswerModel.getAnsweredByUser())
+    };
+  }
 
-    createMongoMap(surveyAnswerModel : ISurveyAnswerModel) : Object {
-      return {
-        _id: new ObjectID(surveyAnswerModel.getId()) ?? new ObjectID(),
-        survey: surveyAnswerModel.getSurvey(),
-        asks: surveyAnswerModel.getAsks()
-      };
-    }
+  createByMongoMap(mongoMap: any): ISurveyAnswerModel {
+
+    const surveyAnswer = new SurveyAnswerModel();
+    surveyAnswer.setId(mongoMap._id.toString());
+    surveyAnswer.setSurvey(this.surveyFactory.createSurveyAnsweredByMongoMap(mongoMap.survey));
+    surveyAnswer.setAnsweredByUser(this.userFactory.createByMongoMap(mongoMap.answeredByUser));
+
+    return surveyAnswer;
+  }
 
 }

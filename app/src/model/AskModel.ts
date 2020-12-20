@@ -6,14 +6,11 @@ import { IUserModel } from "./UserModel";
 export type TypeAskAnswerModel = {
   id?: string
   value: string
-  user: IUserModel
 }
 export interface IAskAnswerModel {
   getId(): string;
   getValue(): string;
   setValue(answer: string): IAskAnswerModel;
-  getAnsweredByUser(): IUserModel;
-  setAnsweredByUser(user: IUserModel): IAskAnswerModel;
 }
 
 export class AskAnswerModel implements IAskAnswerModel {
@@ -38,14 +35,6 @@ export class AskAnswerModel implements IAskAnswerModel {
   }
   setValue(answer: string): IAskAnswerModel {
     this.value = answer;
-    return this;
-  }
-
-  getAnsweredByUser(): IUserModel {
-    return this.answeredByUser;
-  }
-  setAnsweredByUser(user: IUserModel): IAskAnswerModel {
-    this.answeredByUser = user;
     return this;
   }
 
