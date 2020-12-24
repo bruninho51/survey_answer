@@ -5,7 +5,6 @@ import { SurveyAnswerDTO } from "../dto/SurveyAnswerDTO";
 import { ISurveyRepository } from "../repository/SurveyRepository";
 import { HttpInvalidAskException } from "../exception";
 import { AskAnswerModel } from "../model/AskModel";
-import { SurveyResource } from "../resource/SurveyResource";
 import { ISurveyAnswerModelFactory } from "../service/factory/SurveyAnswerModelFactory";
 import { ISurveyAnswerRepository } from "../repository/SurveyAnswerRepository";
 import { SurveyAnswerResource } from "../resource/SurveyAnswerResource";

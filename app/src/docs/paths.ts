@@ -1,9 +1,11 @@
 import {
   authPath,
-  mePath
+  mePath,
+  userPath
 } from "./paths/";
     
 export default {
   "/auth": authPath,
-  "/me": mePath
+  "/me": mePath,
+  "/user": userPath
 };

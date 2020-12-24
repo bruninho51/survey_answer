@@ -12,7 +12,6 @@ export interface ISurveyAnswerModelFactory {
     createByMongoMap(mongoMap: any): ISurveyAnswerModel;
 }
 
-
 @Service("surveyAnswer.factory")
 export class SurveyAnswerFactory implements ISurveyAnswerModelFactory {
 

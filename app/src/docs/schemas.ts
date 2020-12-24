@@ -2,12 +2,16 @@ import {
   accessTokenSchema,
   authParamsSchema,
   errorSchema,
-  userSchema
+  userSchema,
+  errorValidationSchema,
+  userResponseSchema
 } from "./schemas/";
 
 export default {
   accessToken: accessTokenSchema,
   authParams: authParamsSchema,
   error: errorSchema,
-  user: userSchema
+  userParams: userSchema,
+  userResponse: userResponseSchema,
+  errorValidation: errorValidationSchema
 };

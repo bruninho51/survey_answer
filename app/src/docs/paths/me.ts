@@ -8,7 +8,7 @@ export const mePath = {
         content: {
           "application/json": {
             schema: {
-              $ref: "#/schemas/user"
+              $ref: "#/schemas/userResponse"
             }
           }
         }
