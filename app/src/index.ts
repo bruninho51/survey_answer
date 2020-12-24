@@ -1,6 +1,11 @@
 import * as dotenv from "dotenv";
 import "reflect-metadata";
-import { createExpressServer, useContainer, Action, InternalServerError } from "routing-controllers";
+import { 
+  createExpressServer,
+  useContainer,
+  Action,
+  InternalServerError
+} from "routing-controllers";
 import { Container } from "typedi";
 import Db from "./service/db/Db";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
@@ -8,6 +13,8 @@ import HttpTokenExpiredExeception from "./exception/http/HttpTokenExpiredExcepti
 import { IUserRepository } from "./repository/UserRepository";
 import { IUserModel } from "./model/UserModel";
 import Seed from "./seeds";
+import * as swaggerUiExpress from "swagger-ui-express";
+import docs from "./docs";
 
 dotenv.config({ path: "/app/.env" });
 
@@ -21,7 +28,7 @@ if (process.env.NODE_ENV === "development") {
   seed.generate();
 }
 
-const app = createExpressServer({
+const routingControllersOptions = {
   controllers: [__dirname + "/controller/*.ts"],
   middlewares: [__dirname + "/middlewares/*.ts"],
   authorizationChecker: async (action: Action, roles: string[]) => {
@@ -49,6 +56,11 @@ const app = createExpressServer({
     return false;
   },
   currentUserChecker: (action: Action) : IUserModel => action.request.me
-});
+};
+
+const app = createExpressServer(routingControllersOptions);
+
+// Swagger
+app.use("/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(docs));
 
 app.listen(8080);
