@@ -1,7 +1,9 @@
 import {
-  badRequest
+  badRequest,
+  unauthorized
 } from "./components/";
       
 export default {
-  "badRequest": badRequest
+  "badRequest": badRequest,
+  "unauthorized": unauthorized
 };

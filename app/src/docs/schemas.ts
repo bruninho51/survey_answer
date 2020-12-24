@@ -1,11 +1,13 @@
 import {
   accessTokenSchema,
   authParamsSchema,
-  errorSchema
+  errorSchema,
+  userSchema
 } from "./schemas/";
-  
+
 export default {
   accessToken: accessTokenSchema,
   authParams: authParamsSchema,
-  error: errorSchema
+  error: errorSchema,
+  user: userSchema
 };
