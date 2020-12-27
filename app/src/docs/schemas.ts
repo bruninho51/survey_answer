@@ -4,7 +4,8 @@ import {
   errorSchema,
   userSchema,
   errorValidationSchema,
-  userResponseSchema
+  userResponseSchema,
+  usersResponseSchema
 } from "./schemas/";
 
 export default {
@@ -13,5 +14,6 @@ export default {
   error: errorSchema,
   userParams: userSchema,
   userResponse: userResponseSchema,
-  errorValidation: errorValidationSchema
+  errorValidation: errorValidationSchema,
+  usersResponse: usersResponseSchema
 };

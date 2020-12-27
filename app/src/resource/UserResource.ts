@@ -18,12 +18,12 @@ export class UserResource {
         {
           type: "GET",
           rel: "self",
-          uri: process.env.BASE_URL + "/user/" + this.user.getId()
+          href: process.env.BASE_URL + "/user/" + this.user.getId()
         }, 
         {
           type: "PUT",
           rel: "self",
-          uri: process.env.BASE_URL + "/user/" + this.user.getId()
+          href: process.env.BASE_URL + "/user/" + this.user.getId()
         }
       );
     }
