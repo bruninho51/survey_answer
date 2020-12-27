@@ -1,7 +1,7 @@
 export const userPath = {
   get: {
     tags: ["User"],
-    summary: "API para obtenção dos usuários",
+    summary: "API para obtenção de usuário pelo id",
     parameters: [{
       in: "path",
       name: "id",
@@ -16,44 +16,16 @@ export const userPath = {
         content: {
           "application/json": {
             schema: {
-              $ref: "#/schemas/usersResponse"
-            }
-          }
-        }
-      },
-      401: {
-        $ref: "#/components/badRequest"
-      }
-    }
-  },
-  post: {
-    tags: ["User"],
-    summary: "API para o cadastro de usuários",
-    requestBody: {
-      content: {
-        "application/json": {
-          schema: {
-            $ref: "#/schemas/userParams"
-          }
-        }
-      }
-    },
-    responses: {
-      200: {
-        description: "Sucesso",
-        content: {
-          "application/json": {
-            schema: {
               $ref: "#/schemas/userResponse"
             }
           }
         }
       },
-      400: {
-        $ref: "#/components/badRequestInvalidData"
-      },
       401: {
         $ref: "#/components/badRequest"
+      },
+      404: {
+        $ref: "#/components/notFound"
       }
     }
   }
