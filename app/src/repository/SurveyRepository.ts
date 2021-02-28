@@ -7,6 +7,7 @@ import { ObjectID } from "mongodb";
 
 export interface ISurveyRepository {
     save(survey : ISurveyModel) : Promise<ISurveyModel>;
+    saveAnswers(survey: ISurveyModel): Promise<ISurveyModel>;
     getById(id: string) : Promise<ISurveyModel>;
     countAll() : Promise<number>;
     getAll(options : PagingOptions) : Promise<Array<ISurveyModel>>;
@@ -28,6 +29,19 @@ export default class SurveyRepository implements ISurveyRepository {
         this.surveyFactory.createMongoMap(survey));
 
       const surveyUpToDate : ISurveyModel = this.surveyFactory.createByMongoMap(result.ops[0]);
+
+      return surveyUpToDate;
+    }
+
+    async saveAnswers(survey: ISurveyModel): Promise<ISurveyModel> {
+      await Db.connect();
+      const db = Db.getDb();
+      const collection = db.collection("Answers");
+
+      const surveyAnsweredMongoMap = this.surveyFactory.createSurveyAnsweredMongoMap(survey);
+      const result = await collection.insertOne(surveyAnsweredMongoMap);
+
+      const surveyUpToDate : ISurveyModel = this.surveyFactory.createSurveyAnsweredByMongoMap(result.ops[0]);
 
       return surveyUpToDate;
     }
@@ -91,9 +105,7 @@ export default class SurveyRepository implements ISurveyRepository {
       const collection = db.collection("Surveys");
 
       try {
-        //{ stock : { $elemMatch : { country : "01", "warehouse.code" : "02" } } }
         const result = await collection.findOne({ asks: { $elemMatch: { _id: new ObjectID(askId) } } });
-        //const result = await collection.findOne({ asks:  [{ _id: new ObjectID(askId) }] });
         if (result) {
           return this.surveyFactory.createByMongoMap(result);
         }

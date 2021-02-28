@@ -30,6 +30,7 @@ export class SurveyController {
     private askFactory : IAskFactory;
 
     @Post()
+    @Authorized()
     async cadSurvey(@Body() surveyDTO: RegisterSurveyDTO) : Promise<SurveyResource> {
         
       const surveyModel : ISurveyModel = this.surveyFactory.create().populate(surveyDTO);

@@ -1,31 +1,53 @@
-import { Authorized, Body, InternalServerError, JsonController, Post } from "routing-controllers";
-import { IAnswerFactory } from "../service/factory/AnswerModelFactory";
+import { Authorized, Body, CurrentUser, InternalServerError, JsonController, Post } from "routing-controllers";
 import { Inject } from "typedi";
-import { AnswerDTO } from "../dto/AnswerDTO";
-import { IAnswerModel } from "../model/AnswerModel";
-import { IAnswerRepository } from "../repository/AnswerRepository";
-import { AnswerResource } from "../resource/AnswerResource";
-
+import { IUserModel } from "../model/UserModel";
+import { SurveyAnswerDTO } from "../dto/SurveyAnswerDTO";
+import { ISurveyRepository } from "../repository/SurveyRepository";
+import { HttpInvalidAskException } from "../exception";
+import { AskAnswerModel } from "../model/AskModel";
+import { ISurveyAnswerModelFactory } from "../service/factory/SurveyAnswerModelFactory";
+import { ISurveyAnswerRepository } from "../repository/SurveyAnswerRepository";
+import { SurveyAnswerResource } from "../resource/SurveyAnswerResource";
 @JsonController("/answer")
 export class AnswerController {
 
-    @Inject("answer.factory")
-    private answerFactory : IAnswerFactory;
+    @Inject("survey.repository")
+    private surveyRepository: ISurveyRepository;
 
-    @Inject("answer.repository")
-    private answerRepository: IAnswerRepository;
+    @Inject("surveyAnswer.factory")
+    private surveyAnswerFactory: ISurveyAnswerModelFactory;
+
+    @Inject("surveyAnswer.repository")
+    private surveyAnswerRepository: ISurveyAnswerRepository;
 
     @Post("/")
-    async cadAnswer(@Body() answerDTO: AnswerDTO) : Promise<AnswerResource> {
-      // Em vez de fazer da forma atual, você pode salvar na collection Answers o Survey com uma propriedade value
-      // em cada ask + id do usuário que respondeu
-      const answerModel : IAnswerModel = await this.answerFactory.create(answerDTO.askId, answerDTO.value);
-      console.log(answerModel);
+    @Authorized()
+    async cadAnswer(@Body() answerDTO: SurveyAnswerDTO, @CurrentUser({ required: true }) user: IUserModel) : Promise<SurveyAnswerResource> {
+
+      const { surveyId, answers } = answerDTO;
+
+      const survey = await this.surveyRepository.getById(surveyId);
+
+      for (const answer of answers) {
+        const ask = survey.getAskById(answer.askId);
+        if (!ask) {
+          throw new HttpInvalidAskException();
+        }
+
+        const askAnswer = new AskAnswerModel();
+        askAnswer.setValue(answer.value);
+        
+        ask.setAnswer(askAnswer);
+      }
+
+      const surveyAnswer = this.surveyAnswerFactory.create(survey, user);
+
       try {
-        return new AnswerResource(await this.answerRepository.save(answerModel));
+        const surveyAnswered = await this.surveyAnswerRepository.save(surveyAnswer);
+        return new SurveyAnswerResource(surveyAnswered);
       } catch (error) {
-        console.log(error);
-        throw new InternalServerError("An error ocurred on save answer.");
+        console.log(error.stack);
+        throw new InternalServerError("An error ocurred on save answers.");
       }
     }
 }
