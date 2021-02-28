@@ -5,6 +5,21 @@ export const surveysPath = {
     }],
     tags: ["Survey"],
     summary: "API para obtenção dos questionários",
+    parameters: [{
+      in: "query",
+      name: "page",
+      required: false,
+      schema: {
+        type: "number"
+      }
+    }, {
+      in: "query",
+      name: "limit",
+      required: false,
+      schema: {
+        type: "number"
+      }
+    }],
     responses: {
       200: {
         description: "Sucesso",

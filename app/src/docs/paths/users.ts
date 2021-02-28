@@ -5,6 +5,21 @@ export const usersPath = {
     }],
     tags: ["User"],
     summary: "API para obtenção dos usuários",
+    parameters: [{
+      in: "query",
+      name: "page",
+      required: false,
+      schema: {
+        type: "number"
+      }
+    }, {
+      in: "query",
+      name: "limit",
+      required: false,
+      schema: {
+        type: "number"
+      }
+    }],
     responses: {
       200: {
         description: "Sucesso",
