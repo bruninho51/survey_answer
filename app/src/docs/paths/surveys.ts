@@ -1,5 +1,8 @@
 export const surveysPath = {
   get: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["Survey"],
     summary: "API para obtenção dos questionários",
     responses: {
@@ -19,6 +22,9 @@ export const surveysPath = {
     }
   },
   post: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["Survey"],
     summary: "API para o cadastro de questionários",
     requestBody: {

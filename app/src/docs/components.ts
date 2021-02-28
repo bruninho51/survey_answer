@@ -6,8 +6,12 @@ import {
   notFound,
   invalidAnswerData
 } from "./components/";
+import { apiKeyAuthSchema } from "./schemas/apiKeyAuthSchema";
       
 export default {
+  securitySchemes: {
+    bearerAuth: apiKeyAuthSchema
+  },
   "badRequest": badRequest,
   "unauthorized": unauthorized,
   "invalidUserData": invalidUserData,

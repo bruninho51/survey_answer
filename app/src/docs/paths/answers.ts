@@ -1,5 +1,8 @@
 export const answersPath = {
   post: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["Answer"],
     summary: "API para o cadastro de respostas",
     requestBody: {

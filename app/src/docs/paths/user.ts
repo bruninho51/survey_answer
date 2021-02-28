@@ -1,5 +1,8 @@
 export const userPath = {
   get: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["User"],
     summary: "API para obtenção de usuário pelo id",
     parameters: [{

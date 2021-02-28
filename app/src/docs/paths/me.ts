@@ -1,5 +1,8 @@
 export const mePath = {
   get: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["Me"],
     summary: "API para obter os dados do usuário logado",
     responses: {

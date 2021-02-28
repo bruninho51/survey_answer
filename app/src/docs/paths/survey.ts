@@ -1,5 +1,8 @@
 export const surveyPath = {
   get: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["Survey"],
     summary: "API para obtenção de um questionário pelo id",
     parameters: [{

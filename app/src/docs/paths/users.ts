@@ -1,5 +1,8 @@
 export const usersPath = {
   get: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["User"],
     summary: "API para obtenção dos usuários",
     responses: {
@@ -19,6 +22,9 @@ export const usersPath = {
     }
   },
   post: {
+    security: [{
+      bearerAuth: [] as any[]
+    }],
     tags: ["User"],
     summary: "API para o cadastro de usuários",
     requestBody: {
