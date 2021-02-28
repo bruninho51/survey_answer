@@ -3,9 +3,15 @@ import {
   authParamsSchema,
   errorSchema,
   userSchema,
-  errorValidationSchema,
+  userErrorValidationSchema,
+  surveyErrorValidationSchema,
   userResponseSchema,
-  usersResponseSchema
+  usersResponseSchema,
+  surveyResponseSchema,
+  surveySchema,
+  surveysResponseSchema,
+  answerSchema,
+  answerErrorValidationSchema
 } from "./schemas/";
 
 export default {
@@ -14,6 +20,13 @@ export default {
   error: errorSchema,
   userParams: userSchema,
   userResponse: userResponseSchema,
-  errorValidation: errorValidationSchema,
-  usersResponse: usersResponseSchema
+  userErrorValidation: userErrorValidationSchema,
+  surveyErrorValidation: surveyErrorValidationSchema,
+  answerErrorValidation: answerErrorValidationSchema,
+  usersResponse: usersResponseSchema,
+  surveyResponse: surveyResponseSchema,
+  surveysResponse: surveysResponseSchema,
+  survey: surveySchema,
+  surveyParams: surveySchema,
+  answerParams: answerSchema
 };

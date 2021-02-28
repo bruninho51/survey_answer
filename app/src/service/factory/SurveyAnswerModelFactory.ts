@@ -31,10 +31,12 @@ export class SurveyAnswerFactory implements ISurveyAnswerModelFactory {
   }
 
   createMongoMap(surveyAnswerModel : ISurveyAnswerModel) : Object {
+    const answeredByUser: any = this.userFactory.createMongoMap(surveyAnswerModel.getAnsweredByUser());
+    answeredByUser.password = null;
     return {
       _id: new ObjectID(surveyAnswerModel.getId()) ?? new ObjectID(),
       survey: this.surveyFactory.createSurveyAnsweredMongoMap(surveyAnswerModel.getSurvey()),
-      answeredByUser: this.userFactory.createMongoMap(surveyAnswerModel.getAnsweredByUser())
+      answeredByUser: answeredByUser
     };
   }
 

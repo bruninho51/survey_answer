@@ -43,7 +43,8 @@ export class AnswerController {
       const surveyAnswer = this.surveyAnswerFactory.create(survey, user);
 
       try {
-        return new SurveyAnswerResource(await this.surveyAnswerRepository.save(surveyAnswer));
+        const surveyAnswered = await this.surveyAnswerRepository.save(surveyAnswer);
+        return new SurveyAnswerResource(surveyAnswered);
       } catch (error) {
         console.log(error.stack);
         throw new InternalServerError("An error ocurred on save answers.");

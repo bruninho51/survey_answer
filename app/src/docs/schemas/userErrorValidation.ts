@@ -1,4 +1,4 @@
-export const errorValidationSchema = {
+export const userErrorValidationSchema = {
   type: "object",
   properties: {
     name: {

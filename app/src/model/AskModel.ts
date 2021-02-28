@@ -15,6 +15,9 @@ export interface IAskAnswerModel {
 
 export class AskAnswerModel implements IAskAnswerModel {
   
+  constructor() {
+    this.value = null;
+  }
   
   @IsOptional()
   @IsString()

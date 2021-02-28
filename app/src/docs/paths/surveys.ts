@@ -1,14 +1,14 @@
-export const usersPath = {
+export const surveysPath = {
   get: {
-    tags: ["User"],
-    summary: "API para obtenção dos usuários",
+    tags: ["Survey"],
+    summary: "API para obtenção dos questionários",
     responses: {
       200: {
         description: "Sucesso",
         content: {
           "application/json": {
             schema: {
-              $ref: "#/schemas/usersResponse"
+              $ref: "#/schemas/surveysResponse"
             }
           }
         }
@@ -19,13 +19,13 @@ export const usersPath = {
     }
   },
   post: {
-    tags: ["User"],
-    summary: "API para o cadastro de usuários",
+    tags: ["Survey"],
+    summary: "API para o cadastro de questionários",
     requestBody: {
       content: {
         "application/json": {
           schema: {
-            $ref: "#/schemas/userParams"
+            $ref: "#/schemas/surveyParams"
           }
         }
       }
@@ -36,13 +36,13 @@ export const usersPath = {
         content: {
           "application/json": {
             schema: {
-              $ref: "#/schemas/userResponse"
+              $ref: "#/schemas/surveyResponse"
             }
           }
         }
       },
       400: {
-        $ref: "#/components/invalidUserData"
+        $ref: "#/components/invalidSurveyData"
       },
       401: {
         $ref: "#/components/badRequest"
