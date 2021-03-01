@@ -7,6 +7,7 @@ import { UsersResource } from "../resource/UsersResource";
 import { UserFactory } from "../service/factory/UserModelFactory";
 import { RegisterUserDTO } from "../dto/RegisterUserDTO";
 import { HttpUserNotFoundException } from "../exception";
+import { IEmailSender } from "../service/messaging/emailSender";
 
 @JsonController("/user")
 export class UserController {
@@ -17,12 +18,17 @@ export class UserController {
     @Inject("user.factory")
     private userFactory : UserFactory;
 
+    @Inject("email.sender")
+    private emailSender: IEmailSender
+
     @Post("/")
     @Authorized()
     async cadUser(@Body() userDTO : RegisterUserDTO) : Promise<UserResource> {
       const userModel : IUserModel = this.userFactory.create().populate(userDTO);
       try {
-        return new UserResource(await this.userRepository.save(userModel));
+        const savedUser = await this.userRepository.save(userModel);
+        this.emailSender.sendCreatedUserConfirmation(savedUser);
+        return new UserResource(savedUser);
       } catch (error) {
         throw new InternalServerError("An error ocurred on save user.");
       }
